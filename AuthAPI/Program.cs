@@ -1,8 +1,5 @@
-//using AuthAPI.Consumeres;
 using AuthAPI.Models;
 using AuthAPI.Services;
-//using HotelingLibrary;
-//using MassTransit;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -45,19 +42,6 @@ builder.Services.AddControllers();
 //services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
-
-//rabbitmq
-//builder.Services.AddMassTransit(config => {
-//    config.AddConsumer<UserChangedConsumer>();
-
-//    config.UsingRabbitMq((ctx, cfg) => {
-//        cfg.Host(builder.Configuration.GetConnectionString("RabbitMQ"));
-//        cfg.ReceiveEndpoint(QueuesUrls.User_ReviewDeleted, c => {
-//            c.ConfigureConsumer<UserChangedConsumer>(ctx);
-//        });
-
-//    });
-//});
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
