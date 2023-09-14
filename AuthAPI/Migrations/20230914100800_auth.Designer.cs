@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace AuthAPI.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20230913134128_init")]
-    partial class init
+    [Migration("20230914100800_auth")]
+    partial class auth
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -59,18 +59,14 @@ namespace AuthAPI.Migrations
                         {
                             Id = 1,
                             Email = "user@gmail.com",
-                            PasswordHash = "by[.�#[;M(�i��6g���W��ـ�e37",
-                            RefreshToken = "pXX3ZevB7sJMmgj4EkNH0+0YNYxZgUtNrZWkyhvQUOY=",
-                            RefreshTokenExpiryTime = new DateTime(2023, 9, 20, 13, 40, 28, 725, DateTimeKind.Unspecified).AddTicks(6178),
+                            PasswordHash = "k��s�4��k�N�Z?WG���/I�Rݷ�[K",
                             Role = 0
                         },
                         new
                         {
                             Id = 2,
                             Email = "doctor@gmail.com",
-                            PasswordHash = "by[.�#[;M(�i��6g���W��ـ�e37",
-                            RefreshToken = "pXX3ZevB7sJMmgj4EkNH0+0YNYxZgUtNrZWkyhvQUOY=",
-                            RefreshTokenExpiryTime = new DateTime(2023, 9, 20, 13, 40, 28, 725, DateTimeKind.Unspecified).AddTicks(6178),
+                            PasswordHash = "k��s�4��k�N�Z?WG���/I�Rݷ�[K",
                             Role = 1
                         });
                 });

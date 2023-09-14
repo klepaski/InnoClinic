@@ -1,8 +1,6 @@
 ﻿using AuthAPI.Models;
 using AuthAPI.Contracts.Requests;
 using AuthAPI.Contracts.Responses;
-//using HotelingLibrary.Messages;
-//using MassTransit;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -12,11 +10,9 @@ namespace AuthAPI.Services
 {
     public interface IAuthService
     {
-        Task<RegistrationResponse> Register(RegisterRequest request);
-        Task<AuthenticationResponse> Login(LoginRequest request);
-        Task<AuthenticationResponse> Refresh(RefreshTokenRequest request);
-        Task<string> GetRole(string userToken);
-        Task ConsumeUserChangedMessage(ConsumeContext<UserDataChangedMessage> consumeContext);
+        Task<RegisterResponse> Register(RegisterRequest req);
+        Task<LoginResponse> Login(LoginRequest req);
+        Task<LoginResponse> Refresh(RefreshTokenRequest req);
     }
 
     public class AuthService : IAuthService
@@ -30,44 +26,37 @@ namespace AuthAPI.Services
             _tokenService = tokenService;
         }
 
-        //email password Role
-        public async Task<RegistrationResponse> Register(RegisterRequest req)
+        public async Task<RegisterResponse> Register(RegisterRequest req)
         {
             var userExists = await _db.Users.FirstOrDefaultAsync(x => x.Email == req.Email);
+            var pwHash = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(req.Password)));
             if (userExists != null)
             {
-                return new RegistrationResponse(false, "Someone already uses this email.");
+                return new RegisterResponse(false, "Someone already uses this email.");
             }
-            var pwHash = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(req.Password)));
-            var refreshToken = _tokenService.GenerateRefreshToken();
-
             var newUser = new User()
             {
                 Email = req.Email,
                 PasswordHash = pwHash,
-                RefreshToken = refreshToken,
-                RefreshTokenExpiryTime = DateTime.Now.AddDays(7),
-                Role = req.Role //req?.Role ?? Role.User
+                Role = req?.Role ?? Role.Patient
             };
-
             await _db.Users.AddAsync(newUser);
             await _db.SaveChangesAsync();
-            return new RegistrationResponse(true, "User created.");
+            return new RegisterResponse(true, "User created.");
         }
 
-        //email password
-        public async Task<AuthenticationResponse> Login(LoginRequest req)
+        public async Task<LoginResponse> Login(LoginRequest req)
         {
             var user = await _db.Users.FirstOrDefaultAsync(x => x.Email == req.Email);
             if (user is null)
-                return new AuthenticationResponse
-                {
-                    Success = false,
-                    ErrorMessage = "User with this email doesn't exist."
-                };
-
+            {
+                return new LoginResponse(false, "User with this email doesn't exist.");
+            }
             var pwHash = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(req.Password)));
-            
+            if (user.PasswordHash != pwHash)
+            {
+                return new LoginResponse(false, "Wrong password.");
+            }
             var claims = new List<Claim>
             {
                 new Claim("UserId", user.Id.ToString()),
@@ -79,53 +68,25 @@ namespace AuthAPI.Services
             user.RefreshToken = refreshToken;
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
             await _db.SaveChangesAsync();
-            return new AuthenticationResponse
-            {
-                Success = true,
-                Token = accessToken,
-                RefreshToken = refreshToken
-            };
+            return new LoginResponse(true, accessToken, refreshToken);
         }
 
-        //access refresh
-        public async Task<AuthenticationResponse> Refresh(RefreshTokenRequest req)
+        public async Task<LoginResponse> Refresh(RefreshTokenRequest req)
         {
-            string accessToken = req.AccessToken;
-            string refreshToken = req.RefreshToken;
-            var principal = _tokenService.GetPrincipalFromExpiredToken(accessToken);
-            var email = principal.Identity.Name;
+            var principal = _tokenService.GetPrincipalFromToken(req.AccessToken);
+            var userId = principal.Claims.FirstOrDefault(c => c.Type == "UserId")?.Value;
+            var user = await _db.Users.FindAsync(Int32.Parse(userId));
 
-            var user = await _db.Users.SingleOrDefaultAsync(x => x.Email == email);
-            if (user is null || user.RefreshToken != refreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
-                return new AuthenticationResponse()
-                {
-                    Success = false,
-                    ErrorMessage = "Invalid client request"
-                };
+            if (user is null || user.RefreshToken != req.RefreshToken || user.RefreshTokenExpiryTime <= DateTime.Now)
+            {
+                return new LoginResponse(false, "Invalid request.");
+            }
             var newAccessToken = _tokenService.GenerateAccessToken(principal.Claims);
             var newRefreshToken = _tokenService.GenerateRefreshToken();
             user.RefreshToken = newRefreshToken;
+            user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
             await _db.SaveChangesAsync();
-
-            return new AuthenticationResponse()
-            {
-                Success = true,
-                Token = newAccessToken,
-                RefreshToken = newRefreshToken
-            };
-        }
-
-        public async Task<string> GetRole(string userToken)
-        {
-            return _tokenService.GetRole(userToken);
-        }
-
-        public async Task ConsumeUserChangedMessage(ConsumeContext<UserDataChangedMessage> consumeContext)
-        {
-            var user = _db.Users.First(x => x.Id == consumeContext.Message.EntityId);
-            user.Email = consumeContext.Message.Email;
-            _db.Users.Update(user);
-            await _db.SaveChangesAsync();
+            return new LoginResponse(true, newAccessToken, newRefreshToken);
         }
     }
 }

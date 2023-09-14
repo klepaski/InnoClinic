@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace AuthAPI.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class auth : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -35,8 +35,8 @@ namespace AuthAPI.Migrations
                 columns: new[] { "Id", "Email", "PasswordHash", "RefreshToken", "RefreshTokenExpiryTime", "Role" },
                 values: new object[,]
                 {
-                    { 1, "user@gmail.com", "by[.�#[;M(�i��6g���W��ـ�e37", "pXX3ZevB7sJMmgj4EkNH0+0YNYxZgUtNrZWkyhvQUOY=", new DateTime(2023, 9, 20, 13, 40, 28, 725, DateTimeKind.Unspecified).AddTicks(6178), 0 },
-                    { 2, "doctor@gmail.com", "by[.�#[;M(�i��6g���W��ـ�e37", "pXX3ZevB7sJMmgj4EkNH0+0YNYxZgUtNrZWkyhvQUOY=", new DateTime(2023, 9, 20, 13, 40, 28, 725, DateTimeKind.Unspecified).AddTicks(6178), 1 }
+                    { 1, "user@gmail.com", "k��s�4��k�N�Z?WG���/I�Rݷ�[K", null, null, 0 },
+                    { 2, "doctor@gmail.com", "k��s�4��k�N�Z?WG���/I�Rݷ�[K", null, null, 1 }
                 });
         }
 

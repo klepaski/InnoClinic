@@ -10,8 +10,7 @@ namespace AuthAPI.Services
     {
         string GenerateAccessToken(IEnumerable<Claim> claims);
         string GenerateRefreshToken();
-        ClaimsPrincipal GetPrincipalFromExpiredToken(string token);
-        string GetRole(string userToken);
+        ClaimsPrincipal GetPrincipalFromToken(string token);
     }
 
     public class TokenService : ITokenService
@@ -28,27 +27,25 @@ namespace AuthAPI.Services
 
         public string GenerateAccessToken(IEnumerable<Claim> claims)
         {
-            var signinCredentials = new SigningCredentials(_secret, SecurityAlgorithms.HmacSha256);
-            var tokeOptions = new JwtSecurityToken(
+            var signingCredentials = new SigningCredentials(_secret, SecurityAlgorithms.HmacSha256);
+            var tokenOptions = new JwtSecurityToken(
                 claims: claims,
                 expires: DateTime.Now.AddMinutes(5),
-                signingCredentials: signinCredentials
+                signingCredentials: signingCredentials
             );
-            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokeOptions);
+            var tokenString = new JwtSecurityTokenHandler().WriteToken(tokenOptions);
             return tokenString;
         }
 
         public string GenerateRefreshToken()
         {
-            var random = new byte[32];
-            using (var rng = RandomNumberGenerator.Create())
-            {
-                rng.GetBytes(random);
-                return Convert.ToBase64String(random);
-            }
+            var randomNumber = new byte[64];
+            using var rng = RandomNumberGenerator.Create();
+            rng.GetBytes(randomNumber);
+            return Convert.ToBase64String(randomNumber);
         }
 
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        public ClaimsPrincipal GetPrincipalFromToken(string token)
         {
             var tokenValidationParameters = new TokenValidationParameters
             {
@@ -56,21 +53,19 @@ namespace AuthAPI.Services
                 ValidateIssuer = false,
                 ValidateIssuerSigningKey = true,
                 IssuerSigningKey = _secret,
-                ValidateLifetime = true
+                ValidateLifetime = false
             };
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;
             var principal = tokenHandler.ValidateToken(token, tokenValidationParameters, out securityToken);
-            var jwtSecurityToken = securityToken as JwtSecurityToken;
-            if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
-                throw new SecurityTokenException("Invalid token");
+            if (securityToken.ValidTo > DateTime.UtcNow)
+            {
+                throw new SecurityTokenException("Token is still valid.");
+            }
+            var validToken = securityToken as JwtSecurityToken;
+            if (validToken == null || !validToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
+                throw new SecurityTokenException("Invalid token.");
             return principal;
-        }
-
-        public string GetRole(string userToken)
-        {
-            var jwt = new JwtSecurityTokenHandler().ReadJwtToken(userToken);
-            return jwt.Claims.First(c => c.Type == ClaimTypes.Role).Value;
         }
     }
 }
