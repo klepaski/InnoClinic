@@ -13,7 +13,7 @@
         public string HouseNumber { get; set; }
         public string OfficeNumber { get; set; }
 
-        public override string ToString() => $"{City}, {Street} street, {HouseNumber}. Office: {OfficeNumber}";
+        public override string ToString() => $"{City}, {Street} street, {HouseNumber} | Office: {OfficeNumber}";
     }
 
     public class Office

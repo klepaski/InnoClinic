@@ -34,8 +34,7 @@ namespace OfficesAPI.Services
 
         public async Task<List<Office>> GetAll()
         {
-            var offices = await _db.Offices.ToListAsync();
-            return offices;
+            return await _db.Offices.ToListAsync();
         }
 
         public async Task<OfficeResult> Delete(int id)
