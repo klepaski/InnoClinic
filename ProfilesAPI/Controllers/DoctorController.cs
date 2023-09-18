@@ -39,8 +39,8 @@ namespace ProfilesAPI.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateDoctorRequest doctor)
         {
-            var receptionist = User.Identity.Name;
-            var result = await _doctorService.Create(receptionist, doctor);
+            var creatorName = User.Identity.Name;
+            var result = await _doctorService.Create(creatorName, doctor);
             return result.Success ?
                 Ok(result.Message) :
                 BadRequest(result.Message);

@@ -28,7 +28,7 @@ namespace ProfilesAPI.Services
             MailMessage m = new MailMessage(from, to);
             m.Subject = "InnoClinic account confirmation";
             m.IsBodyHtml = true;
-            m.Body = $"<h3>Hello, dear doctor!</h3>" +
+            m.Body = $"<h3>Hello, dear user!</h3>" +
                     $"<p>Congratulations! Now you have an account.<br>" +
                     $"Your credentials:</p>" +
                     $"<h3>email: {email}<br/>" +

@@ -13,13 +13,7 @@
         public int OfficeId { get; set; }
 
         //redundancy
-        public string RegistryPhoneNumber { get; set; }
         public string OfficeAddress { get; set; }
-
-
-        public override string ToString()
-        {
-            return $"{FirstName} {LastName} {MiddleName}";
-        }
+        public string RegistryPhoneNumber { get; set; }
     }
 }

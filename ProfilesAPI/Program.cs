@@ -12,8 +12,13 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddTransient<IDoctorService, DoctorService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddSingleton<IGetOfficeService, GetOfficeService>();
+builder.Services.AddTransient<IReceptionistService, ReceptionistService>();
 
 var app = builder.Build();
 
