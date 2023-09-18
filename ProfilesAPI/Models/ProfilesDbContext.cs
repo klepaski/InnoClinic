@@ -18,25 +18,6 @@ namespace ProfilesAPI.Models
         {
             base.OnModelCreating(builder);
 
-            // PK
-
-            builder.Entity<Account>()
-                .HasKey(x => x.Id);
-
-            builder.Entity<Patient>()
-                .HasKey(x => x.Id);
-
-            builder.Entity<Doctor>()
-                .HasKey(x => x.Id);
-
-            builder.Entity<Receptionist>()
-                .HasKey(x => x.Id);
-
-            builder.Entity<DoctorSpecialization>()
-                .HasKey(x => x.Id);
-
-            // relations
-
             builder.Entity<Patient>()
                 .HasOne(x => x.Account)
                 .WithOne(x => x.Patient)
@@ -59,8 +40,6 @@ namespace ProfilesAPI.Models
                 .WithMany(x => x.Doctors)
                 .HasForeignKey(x => x.SpecializationId)
                 .IsRequired();
-
-            // data
 
             builder.Entity<Account>().HasData(
                 new Account

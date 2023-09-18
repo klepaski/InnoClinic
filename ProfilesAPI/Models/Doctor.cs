@@ -1,4 +1,6 @@
-﻿namespace ProfilesAPI.Models
+﻿using ProfilesAPI.Contracts.Responses;
+
+namespace ProfilesAPI.Models
 {
     public enum Status
     {
@@ -33,5 +35,23 @@
         //redundancy
         public string OfficeAddress { get; set; }
         public string RegistryPhoneNumber { get; set; }
+
+
+        public GetDoctorByDoctorResponse ToDoctorResponse()
+        {
+            return new GetDoctorByDoctorResponse
+            {
+                Id = this.Id,
+                PhotoUrl = this.Account.PhotoUrl,
+                FirstName = this.FirstName,
+                LastName = this.LastName,
+                MiddleName = this.MiddleName,
+                DateOfBirth = this.DateOfBirth,
+                Specialization = this.DoctorSpecialization.SpecializationName,
+                OfficeId = this.OfficeId,
+                OfficeAddress = this.OfficeAddress,
+                CareerStartYear = this.CareerStartYear
+            };
+        }
     }
 }

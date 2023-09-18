@@ -35,22 +35,9 @@ namespace ProfilesAPI.Services
             var doctor = await _db.Doctors
                 .Include(x => x.Account)
                 .Include(x => x.DoctorSpecialization)
-                .Select(x => new GetDoctorByDoctorResponse
-                {
-                    Id = x.Id,
-                    PhotoUrl = x.Account.PhotoUrl,
-                    FirstName = x.FirstName,
-                    LastName = x.LastName,
-                    MiddleName = x.MiddleName,
-                    DateOfBirth = x.DateOfBirth,
-                    Specialization = x.DoctorSpecialization.SpecializationName,
-                    OfficeId = x.OfficeId,
-                    OfficeAddress = x.OfficeAddress,
-                    CareerStartYear = x.CareerStartYear
-                })
                 .FirstOrDefaultAsync(x => x.Id == id);
             if (doctor is null) return null;
-            return doctor;
+            return doctor.ToDoctorResponse();
         }
 
         public async Task<List<GetDoctorsResponse>> GetAll()
