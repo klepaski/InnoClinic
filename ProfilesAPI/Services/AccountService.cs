@@ -6,7 +6,7 @@ namespace ProfilesAPI.Services
 {
     public interface IAccountService
     {
-        public Task<Account> Create(string receptionistName, string email, string? photoUrl, string phoneNumber);
+        public Task<Account> Create(string creatorName, string email, string? photoUrl, string phoneNumber);
     }
 
     public class AccountService : IAccountService
@@ -24,7 +24,7 @@ namespace ProfilesAPI.Services
         {
             var pw = GeneratePassword();
             var pwHash = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(pw)));
-            Account newAccount = new Account()
+            Account newAccount = new Account
             {
                 Email = email,
                 PasswordHash = pwHash,

@@ -8,11 +8,11 @@ namespace ProfilesAPI.Services
 {
     public interface IReceptionistService
     {
-        public Task<List<GetReceptionistsResponse>> GetAll();
+        public Task<List<GetAllReceptionistsResponse>> GetAll();
         public Task<GetReceptionistResponse?> GetById(int id);
-        public Task<CreateUpdateResponse> Create(string? creatorName, CreateReceptionistRequest receptionist);
-        public Task<CreateUpdateResponse> Update(string? updatorName, UpdateReceptionistRequest newReceptionist);
-        public Task<CreateUpdateResponse> Delete(int id);
+        public Task<GeneralResponse> Create(string? creatorName, CreateReceptionistRequest receptionist);
+        public Task<GeneralResponse> Update(string? updatorName, UpdateReceptionistRequest newReceptionist);
+        public Task<GeneralResponse> Delete(int id);
     }
 
     public class ReceptionistService : IReceptionistService
@@ -28,9 +28,9 @@ namespace ProfilesAPI.Services
             _officeService = officeService;
         }
 
-        public async Task<List<GetReceptionistsResponse>> GetAll()
+        public async Task<List<GetAllReceptionistsResponse>> GetAll()
         {
-            var receptionists = await _db.Receptionists.Select(r => new GetReceptionistsResponse
+            var receptionists = await _db.Receptionists.Select(r => new GetAllReceptionistsResponse
             {
                 Id = r.Id,
                 Fullname = $"{r.FirstName} {r.LastName} {r.MiddleName}",
@@ -57,13 +57,13 @@ namespace ProfilesAPI.Services
         }
 
 
-        public async Task<CreateUpdateResponse> Create(string creatorName, CreateReceptionistRequest receptionist)
+        public async Task<GeneralResponse> Create(string creatorName, CreateReceptionistRequest receptionist)
         {
             var userExist = await _db.Accounts.FirstOrDefaultAsync(x => x.Email == receptionist.Email);
-            if (userExist != null) return new CreateUpdateResponse(false, "Someone already uses this email.");
+            if (userExist != null) return new GeneralResponse(false, "Someone already uses this email.");
 
             var office = await _officeService.GetById(receptionist.OfficeId);
-            if (office is null) return new CreateUpdateResponse(false, $"Wrong Office: {office}");
+            if (office is null) return new GeneralResponse(false, $"Wrong Office: {office}");
 
             var newAccount = await _accountService.Create(creatorName, receptionist.Email, receptionist.PhotoUrl, office.RegistryPhoneNumber);
 
@@ -79,19 +79,19 @@ namespace ProfilesAPI.Services
             };
             await _db.Receptionists.AddAsync(newReceptionist);
             await _db.SaveChangesAsync();
-            return new CreateUpdateResponse(true, "Receptionist created.");
+            return new GeneralResponse(true, "Receptionist created.");
         }
 
-        public async Task<CreateUpdateResponse> Update (string updatorName, UpdateReceptionistRequest newReceptionist)
+        public async Task<GeneralResponse> Update (string updatorName, UpdateReceptionistRequest newReceptionist)
         {
             var receptionist = await _db.Receptionists.FindAsync(newReceptionist.Id);
-            if (receptionist == null) return new CreateUpdateResponse(false, $"Receptionist with id {newReceptionist.Id} not found.");
+            if (receptionist == null) return new GeneralResponse(false, $"Receptionist with id {newReceptionist.Id} not found.");
 
             var account = await _db.Accounts.FindAsync(receptionist.AccountId);
-            if (account == null) return new CreateUpdateResponse(false, $"Account with id {receptionist.AccountId} not found.");
+            if (account == null) return new GeneralResponse(false, $"Account with id {receptionist.AccountId} not found.");
 
             var office = _officeService.GetById(newReceptionist.OfficeId);
-            if (office == null) return new CreateUpdateResponse(false, $"Office with id {newReceptionist.Id} not found.");
+            if (office == null) return new GeneralResponse(false, $"Office with id {newReceptionist.Id} not found.");
 
             receptionist.FirstName = newReceptionist.FirstName;
             receptionist.LastName = newReceptionist.LastName;
@@ -102,22 +102,22 @@ namespace ProfilesAPI.Services
             account.UpdatedBy = updatorName ?? "Undefined";
             account.UpdatedAt = DateTime.Now;
             await _db.SaveChangesAsync();
-            return new CreateUpdateResponse(true, "Receptionist updated.");
+            return new GeneralResponse(true, "Receptionist updated.");
         }
 
         //удалить фото из БД !!!
-        public async Task<CreateUpdateResponse> Delete (int id)
+        public async Task<GeneralResponse> Delete (int id)
         {
             var receptionist = await _db.Receptionists.FindAsync(id);
-            if (receptionist == null) return new CreateUpdateResponse(false, $"Receptionist with id {id} not found.");
+            if (receptionist == null) return new GeneralResponse(false, $"Receptionist with id {id} not found.");
 
             var account = await _db.Accounts.FindAsync(receptionist.AccountId);
-            if (account == null) return new CreateUpdateResponse(false, $"Account with id {receptionist.AccountId} not found.");
+            if (account == null) return new GeneralResponse(false, $"Account with id {receptionist.AccountId} not found.");
 
             _db.Receptionists.Remove(receptionist);
             _db.Accounts.Remove(account);
             await _db.SaveChangesAsync();
-            return new CreateUpdateResponse(true, "Receptionist deleted.");
+            return new GeneralResponse(true, "Receptionist deleted.");
         }
     }
 }

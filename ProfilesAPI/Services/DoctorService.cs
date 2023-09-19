@@ -12,9 +12,12 @@ namespace ProfilesAPI.Services
 {
     public interface IDoctorService
     {
-        public Task<List<GetDoctorsResponse>> GetAll();
+        public Task<List<GetDoctorResponse>> GetAll();
         public Task<GetDoctorByDoctorResponse?> GetDoctorByDoctor(int id);
-        public Task<CreateUpdateResponse> Create(string receptionistName, CreateDoctorRequest doctor);
+        public Task<GetDoctorByPatientResponse?> GetDoctorByPatient(int id);
+        public Task<GeneralResponse> Create(string creatorName, CreateDoctorRequest doctor);
+        public Task<GeneralResponse> Update(string updatorName, UpdateDoctorRequest doctor);
+        public Task<GeneralResponse> ChangeStatus(int id, string status);
     }
 
     public class DoctorService : IDoctorService
@@ -40,13 +43,22 @@ namespace ProfilesAPI.Services
             return doctor.ToDoctorResponse();
         }
 
-        public async Task<List<GetDoctorsResponse>> GetAll()
+        public async Task<GetDoctorByPatientResponse?> GetDoctorByPatient(int id)
+        {
+            var doctor = await _db.Doctors
+                .Include(x => x.DoctorSpecialization)
+                .FirstOrDefaultAsync(x => x.Id == id);
+            if (doctor is null) return null;
+            return doctor.ToPatientResponse();
+        }
+
+        public async Task<List<GetDoctorResponse>> GetAll()
         {
             var doctors = await _db.Doctors
                 .Where(x => x.Status == Status.AtWork)
                 .Include(x => x.DoctorSpecialization)
                 .Include(x => x.Account)
-                .Select(d => new GetDoctorsResponse
+                .Select(d => new GetDoctorResponse
                 {
                     Id = d.Id,
                     PhotoUrl = d.Account.PhotoUrl,
@@ -59,16 +71,13 @@ namespace ProfilesAPI.Services
             return doctors;
         }
 
-        public async Task<CreateUpdateResponse> Create(string creatorName, CreateDoctorRequest doctor)
+        public async Task<GeneralResponse> Create(string creatorName, CreateDoctorRequest doctor)
         {
-            var userExist = await _db.Accounts.FirstOrDefaultAsync(x => x.Email == doctor.Email);
-            if (userExist != null) return new CreateUpdateResponse(false, "Someone already uses this email.");
-
+            var emailExist = await _db.Accounts.FirstOrDefaultAsync(x => x.Email == doctor.Email);
+            if (emailExist != null) return new GeneralResponse(false, "Someone already uses this email.");
             var office = await _officeService.GetById(doctor.OfficeId);
-            if (office is null) return new CreateUpdateResponse(false, $"Wrong Office: {office}");
-
+            if (office is null) return new GeneralResponse(false, $"Wrong Office: {office}");
             var newAccount = await _accountService.Create(creatorName, doctor.Email, doctor.PhotoUrl, office.RegistryPhoneNumber);
-
             Doctor newDoctor = new Doctor()
             {
                 FirstName = doctor.FirstName,
@@ -85,7 +94,42 @@ namespace ProfilesAPI.Services
             };
             await _db.Doctors.AddAsync(newDoctor);
             await _db.SaveChangesAsync();
-            return new CreateUpdateResponse(true, "Doctor created.");
+            return new GeneralResponse(true, "Doctor created.");
+        }
+
+        public async Task<GeneralResponse> Update(string updatorName, UpdateDoctorRequest newDoctor)
+        {
+            var doctor = await _db.Doctors.FindAsync(newDoctor.Id);
+            if (doctor == null) return new GeneralResponse(false, $"Doctor with id {newDoctor.Id} not found.");
+            var account = await _db.Accounts.FindAsync(doctor.AccountId);
+            if (account == null) return new GeneralResponse(false, $"Account with id {doctor.AccountId} not found.");
+            var office = _officeService.GetById(newDoctor.OfficeId);
+            if (office == null) return new GeneralResponse(false, $"Office with id {newDoctor.Id} not found.");
+            doctor.FirstName = newDoctor.FirstName;
+            doctor.LastName = newDoctor.LastName;
+            doctor.MiddleName = newDoctor.MiddleName;
+            doctor.DateOfBirth = newDoctor.DateOfBirth;
+            doctor.OfficeId = office.Id;
+            doctor.SpecializationId = newDoctor.SpecializationId;
+            doctor.CareerStartYear = newDoctor.CareerStartYear;
+            doctor.Status = newDoctor.Status;
+            account.PhotoUrl = newDoctor.PhotoUrl;
+            account.UpdatedBy = updatorName ?? "Undefined";
+            account.UpdatedAt = DateTime.Now;
+            await _db.SaveChangesAsync();
+            return new GeneralResponse(true, "Doctor updated.");
+        }
+
+        public async Task<GeneralResponse> ChangeStatus(int id, string status)
+        {
+            var doctor = await _db.Doctors.FindAsync(id);
+            if (doctor == null)
+                return new GeneralResponse(false, $"Doctor with id {id} not found.");
+            if (Enum.TryParse(status, true, out Status statusValue))
+                doctor.Status = statusValue;
+            else return new GeneralResponse(false, "Invalid status.");
+            await _db.SaveChangesAsync();
+            return new GeneralResponse(true, "Status updated.");
         }
     }
 }

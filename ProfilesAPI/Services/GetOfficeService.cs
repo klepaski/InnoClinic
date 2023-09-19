@@ -25,10 +25,8 @@ namespace ProfilesAPI.Services
             string url = $"http://localhost:5002/Office/GetById/{id}";
             HttpResponseMessage response = await client.GetAsync(url);
             string responseBody = await response.Content.ReadAsStringAsync();
-
             GetOfficeResponse office = JsonConvert.DeserializeObject<GetOfficeResponse>(responseBody);
             //dynamic? office = JsonConvert.DeserializeObject(responseBody);
-
             if (office is null) return null;
             return office;
         }

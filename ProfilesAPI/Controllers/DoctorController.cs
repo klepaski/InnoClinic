@@ -18,6 +18,14 @@ namespace ProfilesAPI.Controllers
             _doctorService = doctorService;
         }
 
+        //[Authorize(Roles = "Patient")]
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            List<GetDoctorResponse> doctors = await _doctorService.GetAll();
+            return Ok(doctors);
+        }
+
         //[Authorize(Roles = "Doctor")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetDoctorByDoctor(int id)
@@ -28,11 +36,12 @@ namespace ProfilesAPI.Controllers
         }
 
         //[Authorize(Roles = "Patient")]
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDoctorByPatient(int id)
         {
-            List<GetDoctorsResponse> doctors = await _doctorService.GetAll();
-            return Ok(doctors);
+            var doctor = await _doctorService.GetDoctorByPatient(id);
+            if (doctor == null) return NotFound($"Doctor with id {id} not found.");
+            return Ok(doctor);
         }
 
         //[Authorize(Roles = "Receptionist")]
@@ -41,6 +50,27 @@ namespace ProfilesAPI.Controllers
         {
             var creatorName = User.Identity.Name;
             var result = await _doctorService.Create(creatorName, doctor);
+            return result.Success ?
+                Ok(result.Message) :
+                BadRequest(result.Message);
+        }
+
+        //[Authorize(Roles = "Receptionist, Doctor")]
+        [HttpPut]
+        public async Task<IActionResult> Update([FromBody] UpdateDoctorRequest doctor)
+        {
+            var updatorName = User.Identity.Name;
+            var result = await _doctorService.Update(updatorName, doctor);
+            return result.Success ?
+                Ok(result.Message) :
+                BadRequest(result.Message);
+        }
+
+        //[Authorize(Roles = "Receptionist")]
+        [HttpPut]
+        public async Task<IActionResult> ChangeStatus(int id, string status)
+        {
+            var result = await _doctorService.ChangeStatus(id, status);
             return result.Success ?
                 Ok(result.Message) :
                 BadRequest(result.Message);

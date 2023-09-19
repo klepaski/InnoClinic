@@ -7,5 +7,8 @@
         public bool IsActive { get; set; }
 
         public List<Doctor> Doctors { get; set; } = new();
+
+        //redundancy
+        public List<string> Services { get; set; }
     }
 }

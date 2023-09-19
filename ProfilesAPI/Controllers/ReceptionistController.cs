@@ -22,7 +22,7 @@ namespace ProfilesAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            List<GetReceptionistsResponse> receptionists = await _receptionistService.GetAll();
+            List<GetAllReceptionistsResponse> receptionists = await _receptionistService.GetAll();
             return Ok(receptionists);
         }
 

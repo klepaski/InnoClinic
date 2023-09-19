@@ -1,11 +1,11 @@
 ﻿namespace ProfilesAPI.Contracts.Responses
 {
-    public class CreateUpdateResponse
+    public class GeneralResponse
     {
         public bool Success { get; set; }
         public string Message { get; set; }
 
-        public CreateUpdateResponse(bool success, string message) 
+        public GeneralResponse(bool success, string message) 
         {  
             Success = success;
             Message = message;

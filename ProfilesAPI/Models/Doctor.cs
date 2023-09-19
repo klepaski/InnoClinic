@@ -53,5 +53,18 @@ namespace ProfilesAPI.Models
                 CareerStartYear = this.CareerStartYear
             };
         }
+
+        public GetDoctorByPatientResponse ToPatientResponse()
+        {
+            return new GetDoctorByPatientResponse
+            {
+                Id = this.Id,
+                FullName = $"{this.FirstName} {this.LastName} {this.MiddleName}",
+                OfficeAddress = this.OfficeAddress,
+                Experience = DateTime.Now.Year - this.CareerStartYear + 1,
+                Specialization = this.DoctorSpecialization.SpecializationName,
+                Services = this.DoctorSpecialization.Services
+            };
+        }
     }
 }
