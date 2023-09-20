@@ -8,6 +8,6 @@ namespace ProfilesAPI.Contracts.Responses
 
         public Patient? FoundPatient { get; set; }
 
-        public string Message { get; set; }
+        public string? Message { get; set; }
     }
 }

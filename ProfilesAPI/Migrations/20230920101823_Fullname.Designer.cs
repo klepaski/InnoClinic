@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ProfilesAPI.Context;
 
@@ -11,9 +12,11 @@ using ProfilesAPI.Context;
 namespace ProfilesAPI.Migrations
 {
     [DbContext(typeof(ProfilesDbContext))]
-    partial class ProfilesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230920101823_Fullname")]
+    partial class Fullname
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -115,6 +118,10 @@ namespace ProfilesAPI.Migrations
 
                     b.Property<int>("OfficeId")
                         .HasColumnType("int");
+
+                    b.Property<string>("RegistryPhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("SpecializationId")
                         .HasColumnType("int");
@@ -256,8 +263,7 @@ namespace ProfilesAPI.Migrations
                 {
                     b.HasOne("ProfilesAPI.Models.Account", "Account")
                         .WithOne("Patient")
-                        .HasForeignKey("ProfilesAPI.Models.Patient", "AccountId")
-                        .OnDelete(DeleteBehavior.SetNull);
+                        .HasForeignKey("ProfilesAPI.Models.Patient", "AccountId");
 
                     b.Navigation("Account");
                 });

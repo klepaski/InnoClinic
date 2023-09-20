@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ProfilesAPI.Models;
+using System.Reflection.Emit;
 
-namespace ProfilesAPI.Models
+namespace ProfilesAPI.Context
 {
     public class ProfilesDbContext : DbContext
     {
@@ -19,27 +21,33 @@ namespace ProfilesAPI.Models
             base.OnModelCreating(builder);
 
             builder.Entity<Patient>()
+                .HasIndex(u => new { u.FirstName, u.LastName, u.MiddleName })
+                .HasDatabaseName("PatientNameIndex");
+
+            builder.Entity<Patient>()
                 .HasOne(x => x.Account)
                 .WithOne(x => x.Patient)
-                .HasForeignKey<Patient>(x => x.AccountId);
+                .HasForeignKey<Patient>(x => x.AccountId)
+                .OnDelete(DeleteBehavior.SetNull);
 
             builder.Entity<Doctor>()
                 .HasOne(x => x.Account)
                 .WithOne(x => x.Doctor)
                 .HasForeignKey<Doctor>(x => x.AccountId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             builder.Entity<Receptionist>()
                 .HasOne(x => x.Account)
                 .WithOne(x => x.Receptionist)
                 .HasForeignKey<Receptionist>(x => x.AccountId)
+                .OnDelete(DeleteBehavior.Cascade)
                 .IsRequired();
 
             builder.Entity<Doctor>()
                 .HasOne(x => x.DoctorSpecialization)
                 .WithMany(x => x.Doctors)
-                .HasForeignKey(x => x.SpecializationId)
-                .IsRequired();
+                .HasForeignKey(x => x.SpecializationId);
 
             builder.Entity<Account>().HasData(
                 new Account

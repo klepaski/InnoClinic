@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using ProfilesAPI.Context;
 using ProfilesAPI.Contracts.Requests;
 using ProfilesAPI.Contracts.Responses;
 using ProfilesAPI.Models;
@@ -8,7 +9,7 @@ namespace ProfilesAPI.Services
 {
     public interface IReceptionistService
     {
-        public Task<List<GetAllReceptionistsResponse>> GetAll();
+        public Task<List<GetReceptionistResponse>> GetAll();
         public Task<GetReceptionistResponse?> GetById(int id);
         public Task<GeneralResponse> Create(string? creatorName, CreateReceptionistRequest receptionist);
         public Task<GeneralResponse> Update(string? updatorName, UpdateReceptionistRequest newReceptionist);
@@ -19,41 +20,25 @@ namespace ProfilesAPI.Services
     {
         private readonly ProfilesDbContext _db;
         private readonly IAccountService _accountService;
-        private readonly IGetOfficeService _officeService;
+        private readonly IOfficeService _officeService;
 
-        public ReceptionistService(ProfilesDbContext db, IAccountService accountService, IGetOfficeService officeService)
+        public ReceptionistService(ProfilesDbContext db, IAccountService accountService, IOfficeService officeService)
         {
             _db = db;
             _accountService = accountService;
             _officeService = officeService;
         }
 
-        public async Task<List<GetAllReceptionistsResponse>> GetAll()
+        public async Task<List<GetReceptionistResponse>> GetAll()
         {
-            var receptionists = await _db.Receptionists.Select(r => new GetAllReceptionistsResponse
-            {
-                Id = r.Id,
-                Fullname = $"{r.FirstName} {r.LastName} {r.MiddleName}",
-                OfficeAddress = r.OfficeAddress
-            }).ToListAsync();
-            return receptionists;
+            return await _db.Receptionists.Include(r => r.Account).Select(r => r.ToResponse()).ToListAsync();
         }
 
         public async Task<GetReceptionistResponse?> GetById(int id)
         {
             var receptionist = await _db.Receptionists.Include(r => r.Account).FirstOrDefaultAsync(r => r.Id == id);
             if (receptionist == null) return null;
-            var result = new GetReceptionistResponse
-            {
-                Id = receptionist.Id,
-                PhotoUrl = receptionist.Account.PhotoUrl,
-                FirstName = receptionist.FirstName,
-                LastName = receptionist.LastName,
-                MiddleName = receptionist.MiddleName,
-                OfficeId = receptionist.OfficeId,
-                OfficeAddress = receptionist.OfficeAddress
-            };
-            return result;
+            return receptionist.ToResponse();
         }
 
 
@@ -84,38 +69,32 @@ namespace ProfilesAPI.Services
 
         public async Task<GeneralResponse> Update (string updatorName, UpdateReceptionistRequest newReceptionist)
         {
-            var receptionist = await _db.Receptionists.FindAsync(newReceptionist.Id);
+            var receptionist = await _db.Receptionists.Include(r => r.Account).FirstOrDefaultAsync(r => r.Id == newReceptionist.Id);
             if (receptionist == null) return new GeneralResponse(false, $"Receptionist with id {newReceptionist.Id} not found.");
 
-            var account = await _db.Accounts.FindAsync(receptionist.AccountId);
-            if (account == null) return new GeneralResponse(false, $"Account with id {receptionist.AccountId} not found.");
-
-            var office = _officeService.GetById(newReceptionist.OfficeId);
-            if (office == null) return new GeneralResponse(false, $"Office with id {newReceptionist.Id} not found.");
+            var office = await _officeService.GetById(receptionist.OfficeId);
+            if (office is null) return new GeneralResponse(false, $"Wrong Office: {office}");
 
             receptionist.FirstName = newReceptionist.FirstName;
             receptionist.LastName = newReceptionist.LastName;
             receptionist.MiddleName = newReceptionist.MiddleName;
-            receptionist.OfficeId = office.Id;
-
-            account.PhotoUrl = newReceptionist.PhotoUrl;
-            account.UpdatedBy = updatorName ?? "Undefined";
-            account.UpdatedAt = DateTime.Now;
+            receptionist.OfficeId = newReceptionist.OfficeId;
+            receptionist.OfficeAddress = office.Address;
+            receptionist.RegistryPhoneNumber = office.RegistryPhoneNumber;
+            receptionist.Account.PhotoUrl = newReceptionist.PhotoUrl;
+            receptionist.Account.UpdatedBy = updatorName ?? "Undefined";
+            receptionist.Account.UpdatedAt = DateTime.Now;
             await _db.SaveChangesAsync();
             return new GeneralResponse(true, "Receptionist updated.");
         }
 
-        //удалить фото из БД !!!
+        // delete photo !
         public async Task<GeneralResponse> Delete (int id)
         {
-            var receptionist = await _db.Receptionists.FindAsync(id);
+            var receptionist = await _db.Receptionists.Include(r => r.Account).FirstOrDefaultAsync(r => r.Id == id);
             if (receptionist == null) return new GeneralResponse(false, $"Receptionist with id {id} not found.");
-
-            var account = await _db.Accounts.FindAsync(receptionist.AccountId);
-            if (account == null) return new GeneralResponse(false, $"Account with id {receptionist.AccountId} not found.");
-
+            _db.Accounts.Remove(receptionist.Account);
             _db.Receptionists.Remove(receptionist);
-            _db.Accounts.Remove(account);
             await _db.SaveChangesAsync();
             return new GeneralResponse(true, "Receptionist deleted.");
         }

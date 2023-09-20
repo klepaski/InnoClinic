@@ -1,8 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ProfilesAPI.Contracts.Requests;
-using ProfilesAPI.Contracts.Responses;
-using ProfilesAPI.Models;
 using ProfilesAPI.Services;
 
 namespace ProfilesAPI.Controllers
@@ -22,24 +20,16 @@ namespace ProfilesAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            List<GetDoctorResponse> doctors = await _doctorService.GetAll();
+            var doctors = await _doctorService.GetAll();
             return Ok(doctors);
         }
 
-        //[Authorize(Roles = "Doctor")]
+        //Patient: + Services according to specialization
+        //[Authorize(Roles = "Doctor, Patient")]
         [HttpGet("{id}")]
-        public async Task<IActionResult> GetDoctorByDoctor(int id)
+        public async Task<IActionResult> GetById(int id)
         {
-            var doctor = await _doctorService.GetDoctorByDoctor(id);
-            if (doctor == null) return NotFound($"Doctor with id {id} not found.");
-            return Ok(doctor);
-        }
-
-        //[Authorize(Roles = "Patient")]
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetDoctorByPatient(int id)
-        {
-            var doctor = await _doctorService.GetDoctorByPatient(id);
+            var doctor = await _doctorService.GetById(id);
             if (doctor == null) return NotFound($"Doctor with id {id} not found.");
             return Ok(doctor);
         }

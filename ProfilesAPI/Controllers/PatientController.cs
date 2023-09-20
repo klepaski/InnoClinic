@@ -22,7 +22,7 @@ namespace ProfilesAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            List<GetAllPatientsResponse> patients = await _patientService.GetAll();
+            List<GetPatientResponse> patients = await _patientService.GetAll();
             return Ok(patients);
         }
 
@@ -37,7 +37,7 @@ namespace ProfilesAPI.Controllers
 
         //[Authorize(Roles = "Receptionist")]
         [HttpPost]
-        public async Task<IActionResult> CreateByAdmin([FromBody] CreatePatientByAdminRequest patient)
+        public async Task<IActionResult> CreateByAdmin([FromBody] CreatePatientByAdminRequest patient) //without account
         {
             var result = await _patientService.CreateByAdmin(patient);
             return result.Success ?
@@ -56,30 +56,30 @@ namespace ProfilesAPI.Controllers
         }
 
         //[Authorize(Roles = "Patient")]
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreatePatientRequest patient)
+        [HttpPost("{accountId}")]
+        public async Task<IActionResult> Create(int accountId, [FromBody] CreatePatientRequest patient)
         {
-            var result = await _patientService.Create(patient);
+            var result = await _patientService.Create(accountId, patient);
             return result.Success ?
                 Ok(result.Message) :
-                Ok(result.FoundPatient);
+                Conflict(result.FoundPatient);
         }
 
         //[Authorize(Roles = "Patient")]
-        [HttpPost]
-        public async Task<IActionResult> CreatePatientWithNewAccount([FromBody] CreatePatientRequest patient)
+        [HttpPost("{accountId}")]
+        public async Task<IActionResult> CreatePatientForAccount(int accountId, [FromBody] CreatePatientRequest patient)
         {
-            var result = await _patientService.CreatePatientWithNewAccount(patient);
+            var result = await _patientService.CreatePatientForAccount(accountId, patient);
             return result.Success ?
                 Ok(result.Message) :
                 BadRequest(result.Message);
         }
 
         //[Authorize(Roles = "Patient")]
-        [HttpPost]
-        public async Task<IActionResult> LinkPatientToAccount([FromBody] Patient patient, Account account)
+        [HttpPost("{accountId}/{patientId}")]
+        public async Task<IActionResult> LinkPatientToAccount(int accountId, int patientId)
         {
-            var result = await _patientService.LinkPatientToAccount(patient, account);
+            var result = await _patientService.LinkPatientToAccount(accountId, patientId);
             return result.Success ?
                 Ok(result.Message) :
                 BadRequest(result.Message);
@@ -95,5 +95,14 @@ namespace ProfilesAPI.Controllers
                 Ok(result.Message) :
                 BadRequest(result.Message);
         }
+
+        //[Authorize(Roles = "Receptionist")]
+        [HttpGet]
+        public async Task<IActionResult> Search(string name)
+        {
+            var matchingPatients = await _patientService.Search(name);
+            return Ok(matchingPatients);
+        }
+
     }
 }

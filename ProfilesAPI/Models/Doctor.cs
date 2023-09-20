@@ -1,4 +1,5 @@
 ﻿using ProfilesAPI.Contracts.Responses;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ProfilesAPI.Models
 {
@@ -18,7 +19,9 @@ namespace ProfilesAPI.Models
         public int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string MiddleName { get; set; }
+        public string? MiddleName { get; set; }
+        [NotMapped]
+        public string FullName { get => $"{FirstName} {LastName} {MiddleName}"; }
         public DateTime DateOfBirth { get; set; }
 
         public int AccountId { get; set; }
@@ -34,36 +37,23 @@ namespace ProfilesAPI.Models
 
         //redundancy
         public string OfficeAddress { get; set; }
-        public string RegistryPhoneNumber { get; set; }
 
 
-        public GetDoctorByDoctorResponse ToDoctorResponse()
+        public GetDoctorResponse ToResponse()
         {
-            return new GetDoctorByDoctorResponse
+            return new GetDoctorResponse
             {
-                Id = this.Id,
-                PhotoUrl = this.Account.PhotoUrl,
-                FirstName = this.FirstName,
-                LastName = this.LastName,
-                MiddleName = this.MiddleName,
-                DateOfBirth = this.DateOfBirth,
-                Specialization = this.DoctorSpecialization.SpecializationName,
-                OfficeId = this.OfficeId,
-                OfficeAddress = this.OfficeAddress,
-                CareerStartYear = this.CareerStartYear
-            };
-        }
-
-        public GetDoctorByPatientResponse ToPatientResponse()
-        {
-            return new GetDoctorByPatientResponse
-            {
-                Id = this.Id,
-                FullName = $"{this.FirstName} {this.LastName} {this.MiddleName}",
-                OfficeAddress = this.OfficeAddress,
-                Experience = DateTime.Now.Year - this.CareerStartYear + 1,
-                Specialization = this.DoctorSpecialization.SpecializationName,
-                Services = this.DoctorSpecialization.Services
+                Id = Id,
+                PhotoUrl = Account.PhotoUrl,
+                FirstName = FirstName,
+                LastName = LastName,
+                MiddleName = MiddleName,
+                DateOfBirth = DateOfBirth,
+                CareerStartYear = CareerStartYear,
+                Experience = DateTime.Now.Year - CareerStartYear + 1,
+                Specialization = DoctorSpecialization.SpecializationName,
+                OfficeId = OfficeId,
+                OfficeAddress = OfficeAddress
             };
         }
     }

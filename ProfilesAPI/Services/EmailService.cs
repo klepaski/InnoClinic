@@ -1,6 +1,6 @@
-﻿using ProfilesAPI.Models;
-using System.Net.Mail;
+﻿using System.Net.Mail;
 using System.Net;
+using ProfilesAPI.Context;
 
 namespace ProfilesAPI.Services
 {

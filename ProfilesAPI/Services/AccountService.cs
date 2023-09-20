@@ -1,4 +1,5 @@
-﻿using ProfilesAPI.Models;
+﻿using ProfilesAPI.Context;
+using ProfilesAPI.Models;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -28,15 +29,15 @@ namespace ProfilesAPI.Services
             {
                 Email = email,
                 PasswordHash = pwHash,
+                PhoneNumber = phoneNumber,
                 IsEmailVerified = false,
                 PhotoUrl = photoUrl,
-                PhoneNumber = phoneNumber,
                 CreatedBy = creatorName??"Undefined",
                 CreatedAt = DateTime.Now
             };
+            await _emailService.SendCredentialsToEmail(email, pw);
             await _db.Accounts.AddAsync(newAccount);
             await _db.SaveChangesAsync();
-            await _emailService.SendCredentialsToEmail(email, pw);
             return newAccount;
         }
 

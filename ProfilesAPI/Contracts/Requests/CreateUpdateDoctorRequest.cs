@@ -7,7 +7,7 @@ namespace ProfilesAPI.Contracts.Requests
         public string? PhotoUrl { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string MiddleName { get; set; }
+        public string? MiddleName { get; set; }
         public DateTime DateOfBirth { get; set; }
         public string Email { get; set; }
         public int SpecializationId { get; set; }   //
@@ -22,7 +22,7 @@ namespace ProfilesAPI.Contracts.Requests
         public string? PhotoUrl { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
-        public string MiddleName { get; set; }
+        public string? MiddleName { get; set; }
         public DateTime DateOfBirth { get; set; }
         public int SpecializationId { get; set; }   //
         public int OfficeId { get; set; }           //

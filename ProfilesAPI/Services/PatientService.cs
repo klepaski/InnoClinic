@@ -1,5 +1,6 @@
 ﻿using Azure.Core;
 using Microsoft.EntityFrameworkCore;
+using ProfilesAPI.Context;
 using ProfilesAPI.Contracts.Requests;
 using ProfilesAPI.Contracts.Responses;
 using ProfilesAPI.Models;
@@ -9,54 +10,36 @@ namespace ProfilesAPI.Services
     public interface IPatientService
     {
         public Task<GetPatientResponse?> GetById(int id);
-        public Task<List<GetAllPatientsResponse>> GetAll();
+        public Task<List<GetPatientResponse>> GetAll();
         public Task<GeneralResponse> CreateByAdmin(CreatePatientByAdminRequest patient);
-        public Task<CreatePatientResponse> Create(CreatePatientRequest patient);
-        public Task<CreatePatientResponse> CreatePatientWithNewAccount(CreatePatientRequest patient);
-        public Task<CreatePatientResponse> LinkPatientToAccount(Patient patient, Account account);
+        public Task<CreatePatientResponse> Create(int accountId, CreatePatientRequest patient);
+        public Task<CreatePatientResponse> CreatePatientForAccount(int accountId, CreatePatientRequest patient);
+        public Task<GeneralResponse> LinkPatientToAccount(int accountId, int patientId);
         public Task<GeneralResponse> Delete(int id);
         public Task<GeneralResponse> Update(string updatorName, UpdatePatientRequest newPatient);
+        public Task<List<Patient>> Search(string name);
     }
 
     public class PatientService : IPatientService
     {
         private readonly ProfilesDbContext _db;
-        private readonly IAccountService _accountService;
 
-        public PatientService(ProfilesDbContext db, IAccountService accountService)
+        public PatientService(ProfilesDbContext db)
         {
             _db = db;
-            _accountService = accountService;
         }
 
         // добавить вывод Appointments пациента (для доктора и пациента)!!
-
         public async Task<GetPatientResponse?> GetById(int id)
         {
             var patient = await _db.Patients.Include(p => p.Account).FirstOrDefaultAsync(p => p.Id == id);
             if (patient == null) return null;
-            var result = new GetPatientResponse
-            {
-                Id = patient.Id,
-                PhotoUrl = patient.Account.PhotoUrl,
-                FirstName = patient.FirstName,
-                LastName = patient.LastName,
-                MiddleName = patient.MiddleName,
-                PhoneNumber = patient.Account.PhoneNumber,
-                DateOfBirth = patient.DateOfBirth
-            };
-            return result;
+            return patient.ToResponse();
         }
 
-        public async Task<List<GetAllPatientsResponse>> GetAll()
+        public async Task<List<GetPatientResponse>> GetAll()
         {
-            return await _db.Patients
-                .Select(p => new GetAllPatientsResponse
-                {
-                    Id = p.Id,
-                    FullName = $"{p.FirstName} {p.LastName} {p.MiddleName}",
-                    PhoneNumber = p.Account.PhoneNumber
-                }).ToListAsync();
+            return await _db.Patients.Include(p => p.Account).Select(p => p.ToResponse()).ToListAsync();
         }
 
         public async Task<GeneralResponse> CreateByAdmin(CreatePatientByAdminRequest patient)
@@ -74,8 +57,12 @@ namespace ProfilesAPI.Services
             return new GeneralResponse(true, "Patient created.");
         }
 
-        public async Task<CreatePatientResponse> Create(CreatePatientRequest patient)
+        public async Task<CreatePatientResponse> Create(int accountId, CreatePatientRequest patient)
         {
+            var account = await _db.Accounts.FindAsync(accountId);
+            if (account != null) account.IsEmailVerified = true;
+            await _db.SaveChangesAsync();
+
             int matchCoefficient = 0;
             var matchingPatients = await _db.Patients
                 .Include(p => p.Account)
@@ -100,13 +87,20 @@ namespace ProfilesAPI.Services
                         FoundPatient = p
                     };
             }
-            return await CreatePatientWithNewAccount(patient);
+            return await CreatePatientForAccount(accountId, patient);
         }
 
-        public async Task<CreatePatientResponse> CreatePatientWithNewAccount(CreatePatientRequest patient)
+        public async Task<CreatePatientResponse> CreatePatientForAccount(int accountId, CreatePatientRequest patient)
         {
-            var creatorName = $"{patient.FirstName} {patient.LastName} {patient.MiddleName}";
-            var newAccount = await _accountService.Create(creatorName, patient.Email, patient.PhotoUrl, patient.PhoneNumber);
+            var account = await _db.Accounts.FindAsync(accountId);
+            if (account is null) return new CreatePatientResponse
+            {
+                Success = false,
+                Message = $"Account with id {accountId} not found."
+            };
+            account.PhoneNumber = patient.PhoneNumber;
+            account.PhotoUrl = patient.PhotoUrl;
+
             var newPatient = new Patient
             {
                 FirstName = patient.FirstName,
@@ -114,8 +108,7 @@ namespace ProfilesAPI.Services
                 MiddleName = patient.MiddleName,
                 DateOfBirth = patient.DateOfBirth,
                 IsLinkedToAccount = true,
-                AccountId = newAccount.Id,
-                Account = newAccount
+                AccountId = accountId
             };
             await _db.Patients.AddAsync(newPatient);
             await _db.SaveChangesAsync();
@@ -126,37 +119,43 @@ namespace ProfilesAPI.Services
             };
         }
 
-        public async Task<CreatePatientResponse> LinkPatientToAccount(Patient patient, Account account)
+        public async Task<GeneralResponse> LinkPatientToAccount(int accountId, int patientId)
         {
+            var patient = await _db.Patients.FindAsync(patientId);
+            if (patient is null) return new GeneralResponse(false, $"Patient with id {patientId} not found.");
             patient.IsLinkedToAccount = true;
-            patient.AccountId = account.Id;
-            patient.Account = account;
+            patient.AccountId = accountId;
             await _db.SaveChangesAsync();
-            return new CreatePatientResponse
-            {
-                Success = true,
-                Message = "Patient is linked to the account."
-            };
+            return new GeneralResponse(true, "Patient is linked to the account.");
         }
 
+        //delete photo, appointments, results !
         public async Task<GeneralResponse> Delete(int id)
         {
             var patient = await _db.Patients.FindAsync(id);
             if (patient == null) return new GeneralResponse(false, $"Patient with id {id} not found.");
+            if (patient.IsLinkedToAccount)
+            {
+                var account = await _db.Accounts.FindAsync(patient.AccountId);
+                if (account != null) _db.Accounts.Remove(account);
+            }
             _db.Patients.Remove(patient);
             await _db.SaveChangesAsync();
             return new GeneralResponse(true, "User deleted.");
         }
 
+
+        // Что делать, если у пациента нет аккаунта?? Значения PhoneNumber и PhotoUrl хранятся в Account, а не в Patient
+        // Создать ему новый акк?? Тогда что указать в email??
         public async Task<GeneralResponse> Update(string updatorName, UpdatePatientRequest newPatient)
         {
-            var patient = await _db.Patients.FindAsync(newPatient.Id);
+            var patient = await _db.Patients.Include(p => p.Account).FirstOrDefaultAsync(p => p.Id == newPatient.Id);
             if (patient == null) return new GeneralResponse(false, $"Patient with id {newPatient.Id} not found.");
             patient.FirstName = newPatient.FirstName;
             patient.LastName = newPatient.LastName;
             patient.MiddleName = newPatient.MiddleName;
             patient.DateOfBirth = newPatient.DateOfBirth;
-            if (patient.Account != null)
+            if (patient.IsLinkedToAccount)
             {
                 patient.Account.PhoneNumber = newPatient.PhoneNumber;
                 patient.Account.PhotoUrl = newPatient.PhotoUrl;
@@ -165,6 +164,14 @@ namespace ProfilesAPI.Services
             }
             await _db.SaveChangesAsync();
             return new GeneralResponse(true, "Patient updated.");
+        }
+
+        public async Task<List<Patient>> Search(string name)
+        {
+            return await _db.Patients
+                .Where(p => (p.FirstName + " " + p.LastName + " " + p.MiddleName).ToLower().Contains(name.ToLower()))
+                //.FromSqlInterpolated($"SELECT * FROM Patients WHERE CONCAT(FirstName, ' ', LastName, ' ', COALESCE(MiddleName, '')) LIKE '%{name}%'")
+                .ToListAsync();
         }
     }
 }

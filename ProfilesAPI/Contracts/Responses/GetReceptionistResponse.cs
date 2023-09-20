@@ -2,13 +2,6 @@
 
 namespace ProfilesAPI.Contracts.Responses
 {
-    public class GetAllReceptionistsResponse
-    {
-        public int Id { get; set; }
-        public string Fullname { get; set; }
-        public string OfficeAddress { get; set; }
-    }
-
     public class GetReceptionistResponse
     {
         public int Id { get; set; }

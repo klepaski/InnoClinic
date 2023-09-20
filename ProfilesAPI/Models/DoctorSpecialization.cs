@@ -9,6 +9,6 @@
         public List<Doctor> Doctors { get; set; } = new();
 
         //redundancy
-        public List<string> Services { get; set; }
+        //public List<string>? Services { get; set; }
     }
 }
