@@ -13,5 +13,6 @@
         public string Specialization { get; set; }
         public int OfficeId { get; set; }
         public string OfficeAddress { get; set; }
+        public string Status { get; set; }
     }
 }

@@ -14,6 +14,8 @@ namespace ProfilesAPI.Services
         public Task<GeneralResponse> Create(string creatorName, CreateDoctorRequest doctor);
         public Task<GeneralResponse> Update(string updatorName, UpdateDoctorRequest doctor);
         public Task<GeneralResponse> ChangeStatus(int id, string status);
+        public Task<List<Doctor>> Search(string name);
+        public Task<List<Doctor>> Filter(int specializationId);
     }
 
     public class DoctorService : IDoctorService
@@ -110,6 +112,20 @@ namespace ProfilesAPI.Services
             else return new GeneralResponse(false, "Invalid status.");
             await _db.SaveChangesAsync();
             return new GeneralResponse(true, "Status updated.");
+        }
+
+        public async Task<List<Doctor>> Search(string name)
+        {
+            return await _db.Doctors
+                .Where(p => (p.FirstName + " " + p.LastName + " " + p.MiddleName).ToLower().Contains(name.ToLower()))
+                .ToListAsync();
+        }
+
+        public async Task<List<Doctor>> Filter(int specializationId)
+        {
+            return await _db.Doctors
+                .Where(p => p.SpecializationId == specializationId)
+                .ToListAsync();
         }
     }
 }

@@ -53,7 +53,8 @@ namespace ProfilesAPI.Models
                 Experience = DateTime.Now.Year - CareerStartYear + 1,
                 Specialization = DoctorSpecialization.SpecializationName,
                 OfficeId = OfficeId,
-                OfficeAddress = OfficeAddress
+                OfficeAddress = OfficeAddress,
+                Status = this.Status.ToString()
             };
         }
     }

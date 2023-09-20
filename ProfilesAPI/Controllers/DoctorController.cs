@@ -16,7 +16,7 @@ namespace ProfilesAPI.Controllers
             _doctorService = doctorService;
         }
 
-        //[Authorize(Roles = "Patient")]
+        //[Authorize(Roles = "Patient, Receptionist")]
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -25,7 +25,7 @@ namespace ProfilesAPI.Controllers
         }
 
         //Patient: + Services according to specialization
-        //[Authorize(Roles = "Doctor, Patient")]
+        //[Authorize(Roles = "Doctor, Patient, Receptionist")]
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -64,6 +64,22 @@ namespace ProfilesAPI.Controllers
             return result.Success ?
                 Ok(result.Message) :
                 BadRequest(result.Message);
+        }
+
+        //[Authorize(Roles = "Receptionist, Patient")]
+        [HttpGet]
+        public async Task<IActionResult> Search(string name)
+        {
+            var matchingPatients = await _doctorService.Search(name);
+            return Ok(matchingPatients);
+        }
+
+        //[Authorize(Roles = "Receptionist, Patient")]
+        [HttpGet]
+        public async Task<IActionResult> Filter(int specializationId)
+        {
+            var matchingPatients = await _doctorService.Filter(specializationId);
+            return Ok(matchingPatients);
         }
     }
 }
