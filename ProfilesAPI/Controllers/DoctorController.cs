@@ -70,16 +70,24 @@ namespace ProfilesAPI.Controllers
         [HttpGet]
         public async Task<IActionResult> Search(string name)
         {
-            var matchingPatients = await _doctorService.Search(name);
-            return Ok(matchingPatients);
+            var matchingDoctors = await _doctorService.Search(name);
+            return Ok(matchingDoctors);
         }
 
         //[Authorize(Roles = "Receptionist, Patient")]
         [HttpGet]
-        public async Task<IActionResult> Filter(int specializationId)
+        public async Task<IActionResult> FilterBySpecialization(int specializationId)
         {
-            var matchingPatients = await _doctorService.Filter(specializationId);
-            return Ok(matchingPatients);
+            var matchingDoctors = await _doctorService.FilterBySpecialization(specializationId);
+            return Ok(matchingDoctors);
+        }
+
+        //[Authorize(Roles = "Receptionist, Patient")]
+        [HttpGet]
+        public async Task<IActionResult> FilterByOffice(int officeId)
+        {
+            var matchingDoctors = await _doctorService.FilterByOffice(officeId);
+            return Ok(matchingDoctors);
         }
     }
 }

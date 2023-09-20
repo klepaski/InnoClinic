@@ -15,7 +15,8 @@ namespace ProfilesAPI.Services
         public Task<GeneralResponse> Update(string updatorName, UpdateDoctorRequest doctor);
         public Task<GeneralResponse> ChangeStatus(int id, string status);
         public Task<List<Doctor>> Search(string name);
-        public Task<List<Doctor>> Filter(int specializationId);
+        public Task<List<Doctor>> FilterBySpecialization(int specializationId);
+        public Task<List<Doctor>> FilterByOffice(int officeId);
     }
 
     public class DoctorService : IDoctorService
@@ -117,14 +118,21 @@ namespace ProfilesAPI.Services
         public async Task<List<Doctor>> Search(string name)
         {
             return await _db.Doctors
-                .Where(p => (p.FirstName + " " + p.LastName + " " + p.MiddleName).ToLower().Contains(name.ToLower()))
+                .Where(d => (d.FirstName + " " + d.LastName + " " + d.MiddleName).ToLower().Contains(name.ToLower()))
                 .ToListAsync();
         }
 
-        public async Task<List<Doctor>> Filter(int specializationId)
+        public async Task<List<Doctor>> FilterBySpecialization(int specializationId)
         {
             return await _db.Doctors
-                .Where(p => p.SpecializationId == specializationId)
+                .Where(d => d.SpecializationId == specializationId)
+                .ToListAsync();
+        }
+
+        public async Task<List<Doctor>> FilterByOffice(int officeId)
+        {
+            return await _db.Doctors
+                .Where(d => d.OfficeId == officeId)
                 .ToListAsync();
         }
     }
