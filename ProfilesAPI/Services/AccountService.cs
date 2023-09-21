@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using ProfilesAPI.Context;
 using ProfilesAPI.Contracts.Requests;
 using ProfilesAPI.Contracts.Responses;
@@ -35,8 +36,11 @@ namespace ProfilesAPI.Services
             return new GeneralResponse(true, "Email conformed.");
         }
 
-        public async Task<Account> Create(CreateAccountRequest account)
+        public async Task<Account?> Create(CreateAccountRequest account)
         {
+            var accountExist = await _db.Accounts.FirstOrDefaultAsync(a => a.Email == account.Email);
+            if (accountExist != null) return null;
+
             var pwHash = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(account.Password)));
             Account newAccount = new Account
             {

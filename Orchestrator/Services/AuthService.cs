@@ -8,8 +8,8 @@ namespace Orchestrator.Services
 {
     public interface IAuthService
     {
-        public Task<UserResponse?> CreateUser(RegisterRequest request);
-        public Task<AccountResponse?> CreateAccount(RegisterRequest request, UserResponse user);
+        public Task<UserResponse?> CreateUser(RegisterRequest req);
+        public Task<bool> CreateAccount(UserResponse user, RegisterRequest req);
     }
 
     public class AuthService : IAuthService
@@ -21,42 +21,44 @@ namespace Orchestrator.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<UserResponse?> CreateUser(RegisterRequest request)
+        public async Task<UserResponse?> CreateUser(RegisterRequest req)
         {
-            var client = _httpClientFactory.CreateClient();
-            string url = $"http://localhost:5001/Auth/Register";
-            var userReq = new CreateUserRequest
+            using (var client = _httpClientFactory.CreateClient())
             {
-                Email = request.Email,
-                Password = request.Password,
-                Role = request.Role
-            };
-            string userJsonReq = JsonConvert.SerializeObject(userReq);
-            HttpContent userReqContent = new StringContent(userJsonReq, Encoding.UTF8, "application/json");
-            HttpResponseMessage userResponse = await client.PostAsync(url, userReqContent);
-            string userResponseBody = await userResponse.Content.ReadAsStringAsync();
-            UserResponse? user = JsonConvert.DeserializeObject<UserResponse>(userResponseBody);
-            return user;
+                string userUrl = $"{Ports.AuthAPI}/Auth/Register";
+                var userReq = new CreateUserRequest(req.Email, req.Password, req.Role);
+                string userJsonReq = JsonConvert.SerializeObject(userReq);
+                HttpContent userReqContent = new StringContent(userJsonReq, Encoding.UTF8, "application/json");
+                HttpResponseMessage userResponse = await client.PostAsync(userUrl, userReqContent);
+                if (!userResponse.IsSuccessStatusCode) return null;
+                string userResponseBody = await userResponse.Content.ReadAsStringAsync();
+                UserResponse? user = JsonConvert.DeserializeObject<UserResponse>(userResponseBody);
+                return user;
+            }
         }
 
-        public async Task<AccountResponse?> CreateAccount(RegisterRequest request, UserResponse user)
+        public async Task<bool> CreateAccount(UserResponse user, RegisterRequest req)
         {
-            var client = _httpClientFactory.CreateClient();
-            string url = $"http://localhost:5003/Account/Create";
-            var accountReq = new CreateAccountRequest
+            using (var client = _httpClientFactory.CreateClient())
             {
-                UserId = user.Id,
-                Email = request.Email,
-                Password = request.Password,
-                Role = request.Role,
-                PhoneNumber = request.PhoneNumber
-            };
-            string accountJsonReq = JsonConvert.SerializeObject(accountReq);
-            HttpContent accountReqContent = new StringContent(accountJsonReq, Encoding.UTF8, "application/json");
-            HttpResponseMessage accountResponse = await client.PostAsync(url, accountReqContent);
-            string accountResponseBody = await accountResponse.Content.ReadAsStringAsync();
-            AccountResponse? account = JsonConvert.DeserializeObject<AccountResponse>(accountResponseBody);
-            return account;
+                try
+                {
+                    string accountUrl = $"{Ports.ProfilesAPI}/Account/Create";
+                    var accountReq = new CreateAccountRequest(user.Id, req.Email, req.Password, req.Role, req.PhoneNumber);
+                    string accountJsonReq = JsonConvert.SerializeObject(accountReq);
+                    HttpContent accountReqContent = new StringContent(accountJsonReq, Encoding.UTF8, "application/json");
+                    HttpResponseMessage accountResponse = await client.PostAsync(accountUrl, accountReqContent);
+                    accountResponse.EnsureSuccessStatusCode();
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    string deleteUserUrl = $"{Ports.AuthAPI}/Auth/Delete/{req.Email}";
+                    await client.DeleteAsync(deleteUserUrl);
+                    Console.WriteLine(ex.Message);
+                    return false;
+                }
+            }
         }
     }
 }

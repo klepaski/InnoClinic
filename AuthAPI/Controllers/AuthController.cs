@@ -32,7 +32,7 @@ namespace AuthAPI.Controllers
             var result = await _authService.Register(req);
             return result.Success ?
                 Ok(result.NewUser) :
-                Unauthorized(result.Message);
+                BadRequest(result.Message);
         }
 
         [HttpPost]
@@ -43,6 +43,13 @@ namespace AuthAPI.Controllers
             return result.Success ?
                 Ok(result) :
                 Unauthorized(result.Message);
+        }
+
+        [HttpDelete("{email}")]
+        public async Task<IActionResult> Delete(string email)
+        {
+            await _authService.Delete(email);
+            return Ok();
         }
     }
 }

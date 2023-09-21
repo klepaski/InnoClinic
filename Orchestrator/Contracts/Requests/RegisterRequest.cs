@@ -1,6 +1,5 @@
 ﻿namespace Orchestrator.Contracts.Requests
 {
-
     public enum Role
     {
         Patient,

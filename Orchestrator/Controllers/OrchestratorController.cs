@@ -1,6 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Orchestrator.Contracts.Requests;
 using Orchestrator.Services;
+using System;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Transactions;
+using Newtonsoft.Json;
+using Orchestrator.Contracts.Responses;
+using Orchestrator;
+using System.Text;
 
 namespace Orchestrator.Controllers
 {
@@ -21,9 +29,9 @@ namespace Orchestrator.Controllers
             var user = await _authService.CreateUser(req);
             if (user == null) return BadRequest("Can not create user.");
 
-            var account = await _authService.CreateAccount(req, user);
-            if (account == null) return BadRequest("Can not create account.");
-            return Ok(account);
+            var account = await _authService.CreateAccount(user, req);
+            if (account == false) return BadRequest("Can not create account.");
+            return Ok("Account created.");
         }
     }
 }

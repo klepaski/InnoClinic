@@ -13,6 +13,7 @@ namespace AuthAPI.Services
         Task<RegisterResponse> Register(RegisterRequest req);
         Task<LoginResponse> Login(LoginRequest req);
         Task<LoginResponse> Refresh(RefreshTokenRequest req);
+        Task Delete(string email);
     }
 
     public class AuthService : IAuthService
@@ -92,6 +93,13 @@ namespace AuthAPI.Services
             user.RefreshTokenExpiryTime = DateTime.Now.AddDays(7);
             await _db.SaveChangesAsync();
             return new LoginResponse(true, newAccessToken, newRefreshToken);
+        }
+
+        public async Task Delete(string email)
+        {
+            var userToDelete = await _db.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (userToDelete != null) _db.Users.Remove(userToDelete);
+            await _db.SaveChangesAsync();
         }
     }
 }
