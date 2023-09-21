@@ -1,5 +1,19 @@
 {
   "ReRoutes": [
+    //Orchestrator
+    {
+      "UpstreamPathTemplate": "/Orchestrator/{everything}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
+      "DownstreamPathTemplate": "/Orchestrator/{everything}",
+      "DownstreamScheme": "http",
+      "DownstreamHostAndPorts": [
+        {
+          "Host": "localhost",
+          "Port": 5009
+        }
+      ]
+    },
+
     //Auth
     {
       "UpstreamPathTemplate": "/Auth/{everything}",

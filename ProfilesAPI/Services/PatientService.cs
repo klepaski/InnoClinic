@@ -42,6 +42,7 @@ namespace ProfilesAPI.Services
             return await _db.Patients.Include(p => p.Account).Select(p => p.ToResponse()).ToListAsync();
         }
 
+        //without account
         public async Task<GeneralResponse> CreateByAdmin(CreatePatientByAdminRequest patient)
         {
             var newPatient = new Patient

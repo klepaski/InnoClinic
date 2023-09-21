@@ -1,14 +1,11 @@
-﻿namespace AuthAPI.Contracts.Responses
+﻿using AuthAPI.Models;
+
+namespace AuthAPI.Contracts.Responses
 {
     public class RegisterResponse
     {
         public bool Success { get; set; }
-        public string Message { get; set; }
-
-        public RegisterResponse(bool success, string message)
-        {
-            Success = success;
-            Message = message;
-        }
+        public string? Message { get; set; }
+        public User? NewUser { get; set; }
     }
 }

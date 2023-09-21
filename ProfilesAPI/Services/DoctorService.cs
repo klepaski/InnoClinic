@@ -52,51 +52,51 @@ namespace ProfilesAPI.Services
                 .ToListAsync();
         }
 
-        public async Task<GeneralResponse> Create(string creatorName, CreateDoctorRequest doctor)
+        public async Task<GeneralResponse> Create(string creatorName, CreateDoctorRequest req)
         {
-            var emailExist = await _db.Accounts.FirstOrDefaultAsync(x => x.Email == doctor.Email);
+            var emailExist = await _db.Accounts.FirstOrDefaultAsync(x => x.Email == req.Email);
             if (emailExist != null) return new GeneralResponse(false, "Someone already uses this email.");
 
-            var office = await _officeService.GetById(doctor.OfficeId);
-            if (office is null) return new GeneralResponse(false, $"Office with id {doctor.OfficeId} not found.");
+            var office = await _officeService.GetById(req.OfficeId);
+            if (office is null) return new GeneralResponse(false, $"Office with id {req.OfficeId} not found.");
 
-            var newAccount = await _accountService.Create(creatorName, doctor.Email, doctor.PhotoUrl, office.RegistryPhoneNumber);
+            var newAccount = await _accountService.Create(creatorName, req.Email, req.PhotoUrl, office.RegistryPhoneNumber);
             Doctor newDoctor = new Doctor()
             {
-                FirstName = doctor.FirstName,
-                LastName = doctor.LastName,
-                MiddleName = doctor.MiddleName,
-                DateOfBirth = doctor.DateOfBirth,
+                FirstName = req.FirstName,
+                LastName = req.LastName,
+                MiddleName = req.MiddleName,
+                DateOfBirth = req.DateOfBirth,
                 Account = newAccount,
-                SpecializationId = doctor.SpecializationId,
-                OfficeId = doctor.OfficeId,
+                SpecializationId = req.SpecializationId,
+                OfficeId = req.OfficeId,
                 OfficeAddress = office.Address,
-                CareerStartYear = doctor.CareerStartYear,
-                Status = doctor.Status
+                CareerStartYear = req.CareerStartYear,
+                Status = req.Status
             };
             await _db.Doctors.AddAsync(newDoctor);
             await _db.SaveChangesAsync();
             return new GeneralResponse(true, "Doctor created.");
         }
 
-        public async Task<GeneralResponse> Update(string updatorName, UpdateDoctorRequest newDoctor)
+        public async Task<GeneralResponse> Update(string updatorName, UpdateDoctorRequest req)
         {
-            var doctor = await _db.Doctors.Include(d => d.Account).FirstOrDefaultAsync(d => d.Id == newDoctor.Id);
-            if (doctor == null) return new GeneralResponse(false, $"Doctor with id {newDoctor.Id} not found.");
+            var doctor = await _db.Doctors.Include(d => d.Account).FirstOrDefaultAsync(d => d.Id == req.Id);
+            if (doctor == null) return new GeneralResponse(false, $"Doctor with id {req.Id} not found.");
 
-            var office = await _officeService.GetById(newDoctor.OfficeId);
-            if (office == null) return new GeneralResponse(false, $"Office with id {newDoctor.OfficeId} not found.");
+            var office = await _officeService.GetById(req.OfficeId);
+            if (office == null) return new GeneralResponse(false, $"Office with id {req.OfficeId} not found.");
 
-            doctor.FirstName = newDoctor.FirstName;
-            doctor.LastName = newDoctor.LastName;
-            doctor.MiddleName = newDoctor.MiddleName;
-            doctor.DateOfBirth = newDoctor.DateOfBirth;
-            doctor.OfficeId = newDoctor.OfficeId;
+            doctor.FirstName = req.FirstName;
+            doctor.LastName = req.LastName;
+            doctor.MiddleName = req.MiddleName;
+            doctor.DateOfBirth = req.DateOfBirth;
+            doctor.OfficeId = req.OfficeId;
             doctor.OfficeAddress = office.Address;
-            doctor.SpecializationId = newDoctor.SpecializationId;
-            doctor.CareerStartYear = newDoctor.CareerStartYear;
-            doctor.Status = newDoctor.Status;
-            doctor.Account.PhotoUrl = newDoctor.PhotoUrl;
+            doctor.SpecializationId = req.SpecializationId;
+            doctor.CareerStartYear = req.CareerStartYear;
+            doctor.Status = req.Status;
+            doctor.Account.PhotoUrl = req.PhotoUrl;
             doctor.Account.UpdatedBy = updatorName ?? "Undefined";
             doctor.Account.UpdatedAt = DateTime.Now;
             await _db.SaveChangesAsync();
