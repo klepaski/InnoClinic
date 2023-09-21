@@ -1,6 +1,6 @@
 {
   "profiles": {
-    "OfficesAPI": {
+    "Orchestrator": {
       "commandName": "Project",
       "launchBrowser": true,
       "launchUrl": "swagger",
@@ -8,7 +8,7 @@
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5245"
+      "applicationUrl": "http://localhost:5264"
     },
     "IIS Express": {
       "commandName": "IISExpress",
@@ -33,7 +33,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:5002",
+      "applicationUrl": "http://localhost:5009",
       "sslPort": 0
     }
   }

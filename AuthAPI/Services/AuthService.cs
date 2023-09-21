@@ -30,10 +30,11 @@ namespace AuthAPI.Services
         {
             var userExists = await _db.Users.FirstOrDefaultAsync(x => x.Email == req.Email);
             var pwHash = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(req.Password)));
-            if (userExists != null)
+            if (userExists != null) return new RegisterResponse
             {
-                return new RegisterResponse(false, "Someone already uses this email.");
-            }
+                Success = false,
+                Message = "Someone already uses this email."
+            };
             var newUser = new User()
             {
                 Email = req.Email,
@@ -42,7 +43,11 @@ namespace AuthAPI.Services
             };
             await _db.Users.AddAsync(newUser);
             await _db.SaveChangesAsync();
-            return new RegisterResponse(true, "User created.");
+            return new RegisterResponse
+            {
+                Success = true,
+                NewUser = newUser
+            };
         }
 
         public async Task<LoginResponse> Login(LoginRequest req)

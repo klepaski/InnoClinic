@@ -3,19 +3,21 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficesAPI", "OfficesAPI\OfficesAPI.csproj", "{F68D80FA-FE57-4BA0-B1EA-3AAFDD8258B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OfficesAPI", "OfficesAPI\OfficesAPI.csproj", "{F68D80FA-FE57-4BA0-B1EA-3AAFDD8258B6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AuthAPI", "AuthAPI\AuthAPI.csproj", "{18D000E2-0167-47D5-A0C7-6C4459DDAA37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AuthAPI", "AuthAPI\AuthAPI.csproj", "{18D000E2-0167-47D5-A0C7-6C4459DDAA37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ServicesAPI", "ServicesAPI\ServicesAPI.csproj", "{5CC28E28-134B-4361-84E6-BE371DC29A49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServicesAPI", "ServicesAPI\ServicesAPI.csproj", "{5CC28E28-134B-4361-84E6-BE371DC29A49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProfilesAPI", "ProfilesAPI\ProfilesAPI.csproj", "{D6EF55FF-F7FB-4283-8CF8-2DC107CDA022}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ProfilesAPI", "ProfilesAPI\ProfilesAPI.csproj", "{D6EF55FF-F7FB-4283-8CF8-2DC107CDA022}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocumentsAPI", "DocumentsAPI\DocumentsAPI.csproj", "{391A017F-E2E0-45AA-BCAE-B87078B16A79}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DocumentsAPI", "DocumentsAPI\DocumentsAPI.csproj", "{391A017F-E2E0-45AA-BCAE-B87078B16A79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AppointmentsAPI", "AppointmentsAPI\AppointmentsAPI.csproj", "{448C2585-E642-45F1-9D3E-82443C33B91A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AppointmentsAPI", "AppointmentsAPI\AppointmentsAPI.csproj", "{448C2585-E642-45F1-9D3E-82443C33B91A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GatewayAPI", "GatewayAPI\GatewayAPI.csproj", "{D86AF29A-5920-476C-BB53-1B9DF333A1CD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GatewayAPI", "GatewayAPI\GatewayAPI.csproj", "{D86AF29A-5920-476C-BB53-1B9DF333A1CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Orchestrator", "Orchestrator\Orchestrator.csproj", "{39B72108-DB73-4E17-AB08-CC9ADB939BC8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -51,6 +53,10 @@ Global
 		{D86AF29A-5920-476C-BB53-1B9DF333A1CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D86AF29A-5920-476C-BB53-1B9DF333A1CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D86AF29A-5920-476C-BB53-1B9DF333A1CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{39B72108-DB73-4E17-AB08-CC9ADB939BC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39B72108-DB73-4E17-AB08-CC9ADB939BC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39B72108-DB73-4E17-AB08-CC9ADB939BC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39B72108-DB73-4E17-AB08-CC9ADB939BC8}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

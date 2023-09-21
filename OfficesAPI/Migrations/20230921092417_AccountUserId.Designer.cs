@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using OfficesAPI.Models;
 
@@ -11,9 +12,11 @@ using OfficesAPI.Models;
 namespace OfficesAPI.Migrations
 {
     [DbContext(typeof(OfficesDbContext))]
-    partial class OfficesDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230921092417_AccountUserId")]
+    partial class AccountUserId
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

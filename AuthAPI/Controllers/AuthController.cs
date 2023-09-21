@@ -1,10 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthAPI.Contracts.Requests;
-using AuthAPI.Contracts.Responses;
 using AuthAPI.Services;
-using Microsoft.AspNetCore.Authorization;
-using System.Net;
-using System.Security.Claims;
 
 namespace AuthAPI.Controllers
 {
@@ -35,7 +31,7 @@ namespace AuthAPI.Controllers
             if (req is null) return BadRequest("Invalid request.");
             var result = await _authService.Register(req);
             return result.Success ?
-                Ok(result.Message) :
+                Ok(result.NewUser) :
                 Unauthorized(result.Message);
         }
 

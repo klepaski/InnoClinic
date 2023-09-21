@@ -1,6 +1,6 @@
 using ProfilesAPI.Services;
-using ProfilesAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using ProfilesAPI.Context;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,8 +12,15 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddHttpClient();
+
 builder.Services.AddTransient<IDoctorService, DoctorService>();
+builder.Services.AddTransient<IPatientService, PatientService>();
+builder.Services.AddTransient<IReceptionistService, ReceptionistService>();
+
 builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddSingleton<IOfficeService, OfficeService>();
 
 var app = builder.Build();
 
