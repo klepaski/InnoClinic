@@ -1,15 +1,13 @@
 ﻿using Newtonsoft.Json;
-using Orchestrator.Contracts.Requests;
-using Orchestrator.Contracts.Responses;
-using System;
+using JuliaChistyakovaPackage;
 using System.Text;
 
 namespace Orchestrator.Services
 {
     public interface IAuthService
     {
-        public Task<UserResponse?> CreateUser(RegisterRequest req);
-        public Task<bool> CreateAccount(UserResponse user, RegisterRequest req);
+        public Task<User?> CreateUser(RegisterRequest req);
+        public Task<bool> CreateAccount(User user, RegisterRequest req);
     }
 
     public class AuthService : IAuthService
@@ -21,7 +19,7 @@ namespace Orchestrator.Services
             _httpClientFactory = httpClientFactory;
         }
 
-        public async Task<UserResponse?> CreateUser(RegisterRequest req)
+        public async Task<User?> CreateUser(RegisterRequest req)
         {
             using (var client = _httpClientFactory.CreateClient())
             {
@@ -32,12 +30,12 @@ namespace Orchestrator.Services
                 HttpResponseMessage userResponse = await client.PostAsync(userUrl, userReqContent);
                 if (!userResponse.IsSuccessStatusCode) return null;
                 string userResponseBody = await userResponse.Content.ReadAsStringAsync();
-                UserResponse? user = JsonConvert.DeserializeObject<UserResponse>(userResponseBody);
+                User? user = JsonConvert.DeserializeObject<User>(userResponseBody);
                 return user;
             }
         }
 
-        public async Task<bool> CreateAccount(UserResponse user, RegisterRequest req)
+        public async Task<bool> CreateAccount(User user, RegisterRequest req)
         {
             using (var client = _httpClientFactory.CreateClient())
             {

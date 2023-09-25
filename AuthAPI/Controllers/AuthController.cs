@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using AuthAPI.Contracts.Requests;
 using AuthAPI.Services;
+using JuliaChistyakovaPackage;
 
 namespace AuthAPI.Controllers
 {
@@ -26,7 +27,7 @@ namespace AuthAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] RegisterRequest req)
+        public async Task<IActionResult> Register([FromBody] CreateUserRequest req)
         {
             if (req is null) return BadRequest("Invalid request.");
             var result = await _authService.Register(req);

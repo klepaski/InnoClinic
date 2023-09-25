@@ -5,12 +5,13 @@ using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using JuliaChistyakovaPackage;
 
 namespace AuthAPI.Services
 {
     public interface IAuthService
     {
-        Task<RegisterResponse> Register(RegisterRequest req);
+        Task<RegisterResponse> Register(CreateUserRequest req);
         Task<LoginResponse> Login(LoginRequest req);
         Task<LoginResponse> Refresh(RefreshTokenRequest req);
         Task Delete(string email);
@@ -27,7 +28,7 @@ namespace AuthAPI.Services
             _tokenService = tokenService;
         }
 
-        public async Task<RegisterResponse> Register(RegisterRequest req)
+        public async Task<RegisterResponse> Register(CreateUserRequest req)
         {
             var userExists = await _db.Users.FirstOrDefaultAsync(x => x.Email == req.Email);
             var pwHash = Encoding.UTF8.GetString(SHA256.Create().ComputeHash(Encoding.UTF8.GetBytes(req.Password)));

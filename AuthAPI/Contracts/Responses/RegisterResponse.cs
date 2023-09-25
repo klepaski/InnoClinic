@@ -1,4 +1,5 @@
 ﻿using AuthAPI.Models;
+using JuliaChistyakovaPackage;
 
 namespace AuthAPI.Contracts.Responses
 {

@@ -1,6 +1,7 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using ProfilesAPI.Context;
+using JuliaChistyakovaPackage;
 
 namespace ProfilesAPI.Services
 {
@@ -12,16 +13,10 @@ namespace ProfilesAPI.Services
 
     public class EmailService : IEmailService
     {
-        private readonly ProfilesDbContext _db;
         private const string SENDER_EMAIL = "help.medgift@mail.ru";
         private const string PASSWORD = "NXqQyh2QWhkByQmBJqa5"; //Cvthnmyfgj7
         private const int PORT = 587;
-
-        public EmailService(ProfilesDbContext db)
-        {
-            _db = db;
-        }
-
+        
         public async Task SendCredentialsToEmail(string email, string pw)
         {
             MailAddress from = new MailAddress(SENDER_EMAIL, "InnoClinic");
@@ -52,7 +47,7 @@ namespace ProfilesAPI.Services
             m.Body = $"<h3>Hello, dear user!</h3>" +
                     $"<p>Congratulations! Now you have an account.<br>" +
                     $"To confirm your email follow this :" +
-                    $"<a target=\"_self\" href=\"http://localhost:5003/Account/ConfirmEmail/{accountId}\">link</a></p>" +
+                    $"<a target=\"_self\" href=\"{Ports.ProfilesAPI}/Account/ConfirmEmail/{accountId}\">link</a></p>" +
                     $"Thanks!";
             SmtpClient smtp = new SmtpClient("smtp.mail.ru", PORT);
             smtp.Credentials = new NetworkCredential(SENDER_EMAIL, PASSWORD);

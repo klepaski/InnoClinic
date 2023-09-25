@@ -1,11 +1,10 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ProfilesAPI.Context;
-using ProfilesAPI.Contracts.Requests;
 using ProfilesAPI.Contracts.Responses;
 using ProfilesAPI.Models;
 using System.Security.Cryptography;
 using System.Text;
+using JuliaChistyakovaPackage;
 
 namespace ProfilesAPI.Services
 {
