@@ -25,10 +25,11 @@ namespace ProfilesAPI.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateAccountRequest account)
+        public async Task<IActionResult> Create([FromBody] CreateAccountRequest req)
         {
-            var result = await _accountService.Create(account);
-            return Ok(result);
+            var account = await _accountService.Create(req);
+            if (account == null) return BadRequest("Someone already uses this email.");
+            return Ok(account);
         }
     }
 }
