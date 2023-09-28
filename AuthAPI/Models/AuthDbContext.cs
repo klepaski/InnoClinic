@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using JuliaChistyakovaPackage;
 
 namespace AuthAPI.Models
 {

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ProfilesAPI.Contracts.Responses;
-using System.Net.Http;
+using JuliaChistyakovaPackage;
 
 namespace ProfilesAPI.Services
 {
@@ -22,7 +22,7 @@ namespace ProfilesAPI.Services
         public async Task<GetOfficeResponse?> GetById(int id)
         {
             var client = _httpClientFactory.CreateClient();
-            string url = $"http://localhost:5002/Office/GetById/{id}";
+            string url = $"{Ports.OfficesAPI}/Office/GetById/{id}";
             HttpResponseMessage response = await client.GetAsync(url);
             string responseBody = await response.Content.ReadAsStringAsync();
             GetOfficeResponse? office = JsonConvert.DeserializeObject<GetOfficeResponse>(responseBody);
