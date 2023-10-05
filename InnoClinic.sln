@@ -19,7 +19,9 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GatewayAPI", "GatewayAPI\Ga
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Orchestrator", "Orchestrator\Orchestrator.csproj", "{39B72108-DB73-4E17-AB08-CC9ADB939BC8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "JuliaChistyakovaPackage", "MyPackage\JuliaChistyakovaPackage.csproj", "{B49347A0-9F75-4C28-BCF5-146C0A9A20BF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "JuliaChistyakovaPackage", "MyPackage\JuliaChistyakovaPackage.csproj", "{B49347A0-9F75-4C28-BCF5-146C0A9A20BF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharedModels", "SharedModels\SharedModels.csproj", "{1255F6BC-4BD2-4D73-8275-FBB7B355F94D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -55,6 +57,10 @@ Global
 		{B49347A0-9F75-4C28-BCF5-146C0A9A20BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B49347A0-9F75-4C28-BCF5-146C0A9A20BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B49347A0-9F75-4C28-BCF5-146C0A9A20BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1255F6BC-4BD2-4D73-8275-FBB7B355F94D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1255F6BC-4BD2-4D73-8275-FBB7B355F94D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1255F6BC-4BD2-4D73-8275-FBB7B355F94D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1255F6BC-4BD2-4D73-8275-FBB7B355F94D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

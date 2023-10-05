@@ -3,6 +3,8 @@ using ServicesAPI.Models;
 using ServicesAPI.Contracts.Requests;
 using ServicesAPI.Contracts.Responses;
 using Microsoft.EntityFrameworkCore;
+using MassTransit;
+using SharedModels;
 
 namespace ServicesAPI.Services
 {
@@ -18,10 +20,12 @@ namespace ServicesAPI.Services
     public class SpecializationService : ISpecializationService
     {
         private readonly ServicesDbContext _db;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public SpecializationService(ServicesDbContext db)
+        public SpecializationService(ServicesDbContext db, IPublishEndpoint publishEndpoint)
         {
             _db = db;
+            _publishEndpoint = publishEndpoint;
         }
 
         public async Task<List<Specialization>> GetAll()
@@ -48,6 +52,8 @@ namespace ServicesAPI.Services
             };
             await _db.Specializations.AddAsync(newSpecialization);
             await _db.SaveChangesAsync();
+            //rabbit
+            await _publishEndpoint.Publish<SpecializationCreated>(newSpecialization);
             return new GeneralResponse(true, "Specialization created.");
         }
 
