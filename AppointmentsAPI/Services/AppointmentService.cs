@@ -34,47 +34,6 @@ namespace AppointmentsAPI.Services
 
         public async Task Create(CreateAppointmentRequest req)
         {
-            string doctorName = "";
-            string patientName = "";
-            string patientPhoneNumber = "";
-            DateTime patientBirthday = DateTime.Now;
-            string serviceName = "";
-            float servicePrice = 0;
-            string specializationName = "";
-
-            using (var client = _httpClientFactory.CreateClient())
-            {
-                string doctorUrl = $"{Ports.ProfilesAPI}/Doctor/GetById/{req.DoctorId}";
-                HttpResponseMessage doctorRes = await client.GetAsync(doctorUrl);
-                if (doctorRes.IsSuccessStatusCode)
-                {
-                    string responseBody = await doctorRes.Content.ReadAsStringAsync();
-                    dynamic? doctor = JsonConvert.DeserializeObject<dynamic>(responseBody);
-                    doctorName = $"{doctor.firstName} {doctor.lastName} {doctor.middleName}";
-                    specializationName = doctor.specialization;
-                }
-
-                string patientUrl = $"{Ports.ProfilesAPI}/Patient/GetById/{req.PatientId}";
-                HttpResponseMessage patientRes = await client.GetAsync(patientUrl);
-                if (patientRes.IsSuccessStatusCode)
-                {
-                    string responseBody = await patientRes.Content.ReadAsStringAsync();
-                    dynamic? patient = JsonConvert.DeserializeObject(responseBody);
-                    patientName = $"{patient.firstName} {patient.lastName} {patient.middleName}";
-                    patientPhoneNumber = patient.phoneNumber;
-                    patientBirthday = patient.dateOfBirth;
-                }
-
-                string serviceUrl = $"{Ports.ServicesAPI}/Service/GetById/{req.ServiceId}";
-                HttpResponseMessage serviceRes = await client.GetAsync(serviceUrl);
-                if (serviceRes.IsSuccessStatusCode)
-                {
-                    string responseBody = await serviceRes.Content.ReadAsStringAsync();
-                    dynamic? service = JsonConvert.DeserializeObject(responseBody);
-                    serviceName = service.serviceName;
-                    servicePrice = service.price;
-                }
-            }
 
             var newAppointment = new Appointment
             {
@@ -84,14 +43,48 @@ namespace AppointmentsAPI.Services
                 SpecializationId = req.SpecializationId,
                 DateTime = req.DateTime,
                 IsApproved = false,
-                DoctorName = doctorName,
-                PatientName = patientName,
-                PatientPhoneNumber = patientPhoneNumber,
-                PatientBirthday = patientBirthday,
-                ServiceName = serviceName,
-                ServicePrice = servicePrice,
-                DoctorSpecialization = specializationName
+                DoctorName = "",
+                PatientName = "",
+                PatientPhoneNumber = "",
+                PatientBirthday = DateTime.Now,
+                ServiceName = "",
+                ServicePrice = 0,
+                DoctorSpecialization = ""
             };
+
+            using (var client = _httpClientFactory.CreateClient())
+            {
+                string doctorUrl = $"{Ports.ProfilesAPI}/Doctor/GetById/{req.DoctorId}";
+                HttpResponseMessage doctorRes = await client.GetAsync(doctorUrl);
+                if (doctorRes.IsSuccessStatusCode)
+                {
+                    string responseBody = await doctorRes.Content.ReadAsStringAsync();
+                    dynamic? doctor = JsonConvert.DeserializeObject<dynamic>(responseBody);
+                    newAppointment.DoctorName = $"{doctor.firstName} {doctor.lastName} {doctor.middleName}";
+                    newAppointment.DoctorSpecialization = doctor.specialization;
+                }
+
+                string patientUrl = $"{Ports.ProfilesAPI}/Patient/GetById/{req.PatientId}";
+                HttpResponseMessage patientRes = await client.GetAsync(patientUrl);
+                if (patientRes.IsSuccessStatusCode)
+                {
+                    string responseBody = await patientRes.Content.ReadAsStringAsync();
+                    dynamic? patient = JsonConvert.DeserializeObject(responseBody);
+                    newAppointment.PatientName = $"{patient.firstName} {patient.lastName} {patient.middleName}";
+                    newAppointment.PatientPhoneNumber = patient.phoneNumber;
+                    newAppointment.PatientBirthday = patient.dateOfBirth;
+                }
+
+                string serviceUrl = $"{Ports.ServicesAPI}/Service/GetById/{req.ServiceId}";
+                HttpResponseMessage serviceRes = await client.GetAsync(serviceUrl);
+                if (serviceRes.IsSuccessStatusCode)
+                {
+                    string responseBody = await serviceRes.Content.ReadAsStringAsync();
+                    dynamic? service = JsonConvert.DeserializeObject(responseBody);
+                    newAppointment.ServiceName = service.serviceName;
+                    newAppointment.ServicePrice = service.price;
+                }
+            }
             await _db.Appointments.AddAsync(newAppointment);
             await _db.SaveChangesAsync();
         }
