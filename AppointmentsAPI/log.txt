@@ -1,0 +1,12 @@
+2023-10-10 15:16:22.726 +03:00 [INF] first log
+2023-10-10 15:17:57.792 +03:00 [INF] hiii
+2023-10-10 15:17:57.814 +03:00 [INF] [[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]]]
+2023-10-10 15:18:40.385 +03:00 [INF] first log
+2023-10-10 15:18:53.503 +03:00 [INF] hiii
+2023-10-10 15:18:53.504 +03:00 [INF] {"id":1,"photoUrl":"string","firstName":"Maxim","lastName":"Dulevich","middleName":"Alex","dateOfBirth":"1998-10-10T11:26:20.487","careerStartYear":2013,"experience":11,"specialization":"JuliaSpec2","officeId":1,"officeAddress":"Brest, Kolesnika street, 4 | Office: 54","status":"AtWork"}
+2023-10-10 15:20:13.024 +03:00 [INF] first log
+2023-10-10 15:20:31.200 +03:00 [INF] hiii
+2023-10-10 15:20:31.203 +03:00 [INF]   
+2023-10-10 15:21:56.932 +03:00 [INF] [[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]],[[]]]
+2023-10-10 15:25:39.917 +03:00 [INF] {"id":1,"photoUrl":"string","firstName":"Maxim","lastName":"Dulevich","middleName":"Alex","dateOfBirth":"1998-10-10T11:26:20.487","careerStartYear":2013,"experience":11,"specialization":"JuliaSpec2","officeId":1,"officeAddress":"Brest, Kolesnika street, 4 | Office: 54","status":"AtWork"}
+2023-10-10 15:25:39.946 +03:00 [INF] Maxim Dulevich Alex
