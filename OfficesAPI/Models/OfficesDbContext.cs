@@ -4,11 +4,12 @@ namespace OfficesAPI.Models
 {
     public class OfficesDbContext : DbContext
     {
+        public OfficesDbContext() {  }
         public OfficesDbContext(DbContextOptions options) : base(options)
         {
         }
 
-        public DbSet<Office> Offices { get; set; } = null!;
+        public virtual DbSet<Office> Offices { get; set; } = null!;
         public DbSet<Receptionist> Receptionists { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
