@@ -56,7 +56,8 @@ namespace AppointmentsAPI.Services
         {
             var result = (await _db.Results.Include(r => r.Appointment).FirstOrDefaultAsync(r => r.Id == resultId)).ToResponse();
             if (result == null) return "";
-            return $"<h1>Patient: {result.PatientName} ({result.PatientBirthday.ToString("dd.MM.yyyy")})</h1>" +
+            return $"<img src='logo.png' />" +
+                $"<h1>Patient: {result.PatientName} ({result.PatientBirthday.ToString("dd.MM.yyyy")})</h1>" +
                 $"<h3>Doctor: {result.DoctorName} ({result.DoctorSpecialization})</h3>" +
                 $"<h3>Date: {result.DateTime.ToString("dd.MM.yyyy")}</h3>" +
                 $"<h3>Service: {result.ServiceName}</h3>" +
