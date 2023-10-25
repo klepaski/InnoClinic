@@ -13,6 +13,12 @@ builder.Services.AddTransient<IAuthService, AuthService>();
 
 var app = builder.Build();
 
+app.UseHttpsRedirection();
+app.UseCors(x => x
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
