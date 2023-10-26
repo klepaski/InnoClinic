@@ -4,7 +4,7 @@ using ProfilesAPI.Contracts.Responses;
 using ProfilesAPI.Models;
 using System.Security.Cryptography;
 using System.Text;
-using JuliaChistyakovaPackage;
+using SharedModels;
 
 namespace ProfilesAPI.Services
 {

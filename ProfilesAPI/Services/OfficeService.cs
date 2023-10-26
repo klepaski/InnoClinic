@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using ProfilesAPI.Contracts.Responses;
-using JuliaChistyakovaPackage;
+using SharedModels;
 
 namespace ProfilesAPI.Services
 {

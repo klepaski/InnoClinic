@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Orchestrator.Services;
-using JuliaChistyakovaPackage;
+using SharedModels;
 
 namespace Orchestrator.Controllers
 {
