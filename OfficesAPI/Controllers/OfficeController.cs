@@ -27,6 +27,7 @@ namespace OfficesAPI.Controllers
         }
 
         [HttpGet]
+        [ResponseCache(Duration = 60)]
         public async Task<IActionResult> GetAll()
         {
             List<Office> offices = await _officeService.GetAll();
