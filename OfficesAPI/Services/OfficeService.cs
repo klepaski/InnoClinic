@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using OfficesAPI.Contracts.Requests;
 using OfficesAPI.Contracts.Responses;
 using OfficesAPI.Controllers;
@@ -64,10 +65,6 @@ namespace OfficesAPI.Services
                 RegistryPhoneNumber = office.RegistryPhoneNumber,
                 Status = office.Status
             };
-            //if (await _db.Offices.FirstOrDefaultAsync(x => x.Address == newOffice.Address) != null)
-            //{
-            //    return new OfficeResult(false, "Office with this address already exists.");
-            //}
             await _db.Offices.AddAsync(newOffice);
             await _db.SaveChangesAsync();
             return new OfficeResult(true, "Office created.");

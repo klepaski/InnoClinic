@@ -16,6 +16,12 @@ namespace AuthAPI.Controllers
             _authService = authService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Hello()
+        {
+            return Ok("Hello");
+        }
+
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] LoginRequest req)
         {

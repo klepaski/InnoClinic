@@ -14,9 +14,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddTransient<IOfficeService, OfficeService>();
+builder.Services.AddResponseCaching();
 
 var app = builder.Build();
 
+app.UseResponseCaching();
 app.UseHttpsRedirection();
 
 app.UseCors(x => x

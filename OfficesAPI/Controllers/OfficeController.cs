@@ -69,5 +69,28 @@ namespace OfficesAPI.Controllers
                 Ok(result) :
                 BadRequest(result);
         }
+
+        [HttpPost]
+        public async Task<IActionResult> Upload(IFormFile image)
+        {
+            if (image == null || image.Length == 0)
+                return BadRequest("Invalid image file");
+
+            var filePath = Path.Combine("office-images", image.FileName);
+            using (var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await image.CopyToAsync(stream);
+            }
+            var imageUrl = $"http://localhost:5002/Office/GetImage/office-images%5C{image.FileName}";
+            //var imageUrl = $"http://localhost:5002/Office/office-images\\{image.FileName}";
+            return Ok(new { imageUrl });
+        }
+
+        [HttpGet("{imageUrl}")]
+        public IActionResult GetImage(string imageUrl)
+        {
+            var imageBytes = System.IO.File.ReadAllBytes(imageUrl);
+            return File(imageBytes, "image/jpeg");
+        }
     }
 }
