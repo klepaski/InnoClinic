@@ -6,7 +6,7 @@ using JuliaChistyakovaPackage;
 namespace AuthAPI.Controllers
 {
     [ApiController]
-    [Route("[controller]/[action]")]
+    [Route("api/[controller]/[action]")]
     public class AuthController : ControllerBase
     {
         private readonly IAuthService _authService;

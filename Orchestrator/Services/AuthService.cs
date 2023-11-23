@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using JuliaChistyakovaPackage;
 using System.Text;
+using SharedModels;
 
 namespace Orchestrator.Services
 {
@@ -23,7 +23,7 @@ namespace Orchestrator.Services
         {
             using (var client = _httpClientFactory.CreateClient())
             {
-                string userUrl = $"{Ports.AuthAPI}/Auth/Register";
+                string userUrl = $"{Ports.GatewayAPI}/Auth/Register";
                 var userReq = new CreateUserRequest(req.Email, req.Password, req.Role);
                 string userJsonReq = JsonConvert.SerializeObject(userReq);
                 HttpContent userReqContent = new StringContent(userJsonReq, Encoding.UTF8, "application/json");
@@ -51,7 +51,7 @@ namespace Orchestrator.Services
                 }
                 catch (Exception ex)
                 {
-                    string deleteUserUrl = $"{Ports.AuthAPI}/Auth/Delete/{req.Email}";
+                    string deleteUserUrl = $"{Ports.GatewayAPI}/Auth/Delete/{req.Email}";
                     await client.DeleteAsync(deleteUserUrl);
                     Console.WriteLine(ex.Message);
                     return false;

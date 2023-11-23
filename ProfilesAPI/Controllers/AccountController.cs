@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ProfilesAPI.Contracts.Requests;
 using ProfilesAPI.Services;
-using JuliaChistyakovaPackage;
+using SharedModels;
 
 namespace ProfilesAPI.Controllers
 {

@@ -30,7 +30,15 @@ namespace OfficesAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Address")
+                    b.Property<string>("City")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("HouseNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("OfficeNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
@@ -47,6 +55,10 @@ namespace OfficesAPI.Migrations
                     b.Property<int>("Status")
                         .HasColumnType("int");
 
+                    b.Property<string>("Street")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
                     b.ToTable("Offices");
@@ -55,69 +67,25 @@ namespace OfficesAPI.Migrations
                         new
                         {
                             Id = 1,
-                            Address = "Brest, Kolesnika street, 4 | Office: 54",
+                            City = "Brest",
+                            HouseNumber = "4",
+                            OfficeNumber = "54",
                             PhotoUrl = "https://avatars.mds.yandex.net/get-altay/4464784/2a0000017840924485aa42a8ef3d614ace76/L_height",
                             RegistryPhoneNumber = "+375333186223",
-                            Status = 1
+                            Status = 1,
+                            Street = "Kolesnika"
                         },
                         new
                         {
                             Id = 2,
-                            Address = "Minsk, Sverdlova street, 13a | Office: 226",
+                            City = "Minsk",
+                            HouseNumber = "13a",
+                            OfficeNumber = "226",
                             PhotoUrl = "https://avatars.mds.yandex.net/get-altay/933207/2a00000161bf61714998e315745eea065577/orig",
                             RegistryPhoneNumber = "+375333733839",
-                            Status = 0
+                            Status = 0,
+                            Street = "Sverdlova"
                         });
-                });
-
-            modelBuilder.Entity("OfficesAPI.Models.Receptionist", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("FirstName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LastName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OfficeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OfficeId")
-                        .IsUnique();
-
-                    b.ToTable("Receptionists");
-                });
-
-            modelBuilder.Entity("OfficesAPI.Models.Receptionist", b =>
-                {
-                    b.HasOne("OfficesAPI.Models.Office", "Office")
-                        .WithOne("Receptionist")
-                        .HasForeignKey("OfficesAPI.Models.Receptionist", "OfficeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Office");
-                });
-
-            modelBuilder.Entity("OfficesAPI.Models.Office", b =>
-                {
-                    b.Navigation("Receptionist");
                 });
 #pragma warning restore 612, 618
         }

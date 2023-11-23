@@ -1,8 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using OfficesAPI.Contracts.Requests;
 using OfficesAPI.Contracts.Responses;
+using OfficesAPI.Controllers;
 using OfficesAPI.Models;
+using System.IO;
 
 namespace OfficesAPI.Services
 {
@@ -51,24 +54,20 @@ namespace OfficesAPI.Services
 
         public async Task<OfficeResult> Create(CreateOfficeRequest office)
         {
-            Address address = new Address()
+            Office newOffice = new Office()
             {
                 City = office.City,
                 Street = office.Street,
                 HouseNumber = office.HouseNumber,
-                OfficeNumber = office.OfficeNumber
-            };
-            if (await _db.Offices.FirstOrDefaultAsync(x => x.Address == address.ToString()) != null)
-            {
-                return new OfficeResult(false, "Office with this address already exists.");
-            }
-            Office newOffice = new Office()
-            {
-                Address = address.ToString(),
+                OfficeNumber = office.OfficeNumber,
                 PhotoUrl = office.PhotoUrl,
                 RegistryPhoneNumber = office.RegistryPhoneNumber,
                 Status = office.Status
             };
+            //if (await _db.Offices.FirstOrDefaultAsync(x => x.Address == newOffice.Address) != null)
+            //{
+            //    return new OfficeResult(false, "Office with this address already exists.");
+            //}
             await _db.Offices.AddAsync(newOffice);
             await _db.SaveChangesAsync();
             return new OfficeResult(true, "Office created.");
@@ -81,14 +80,10 @@ namespace OfficesAPI.Services
             {
                 return new OfficeResult(false, $"Office with id {newOffice.Id} not found.");
             }
-            Address address = new ()
-            {
-                City = newOffice.City,
-                Street = newOffice.Street,
-                HouseNumber = newOffice.HouseNumber,
-                OfficeNumber = newOffice.OfficeNumber
-            };
-            office.Address = address.ToString();
+            office.City = newOffice.City;
+            office.Street = newOffice.Street;
+            office.HouseNumber = newOffice.HouseNumber;
+            office.OfficeNumber = newOffice.OfficeNumber;
             office.PhotoUrl = newOffice.PhotoUrl;
             office.RegistryPhoneNumber = newOffice.RegistryPhoneNumber;
             office.Status = newOffice.Status;

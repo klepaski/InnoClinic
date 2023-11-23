@@ -9,9 +9,8 @@
 
     public static class Ports
     {
-        public const string Orchestrator = "http://localhost:5009";
         public const string GatewayAPI = "http://localhost:5000";
-        public const string AuthAPI = "http://localhost:5001";
+        public const string Orchestrator = "http://localhost:5001";
         public const string OfficesAPI = "http://localhost:5002";
         public const string ProfilesAPI = "http://localhost:5003";
         public const string ServicesAPI = "http://localhost:5004";

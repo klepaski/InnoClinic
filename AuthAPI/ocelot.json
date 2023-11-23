@@ -9,21 +9,20 @@
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5009
+          "Port": 5001
         }
       ]
     },
-
     //Auth
     {
-      "UpstreamPathTemplate": "/Auth/{everything}",
+      "UpstreamPathTemplate": "/Auth/{action}",
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
-      "DownstreamPathTemplate": "/Auth/{everything}",
+      "DownstreamPathTemplate": "/api/Auth/{action}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
           "Host": "localhost",
-          "Port": 5001
+          "Port": 5000
         }
       ]
     },
@@ -32,13 +31,10 @@
       "UpstreamPathTemplate": "/Office/{everything}",
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
       "AuthenticationOptions": {
-        "AuthenticationProviderKey": "Bearer", //"IdentityApiKey"
+        "AuthenticationProviderKey": "Bearer",
         "AllowedScopes": []
       },
-      //"RouteClaimsRequirement": {
-      //  "Role": "Admin"
-      //},
-
+      "RouteClaimsRequirement": { "Role": "Receptionist" },
       "DownstreamPathTemplate": "/Office/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
@@ -50,9 +46,14 @@
     },
     //Profile
     {
-      "UpstreamPathTemplate": "/Profile/{everything}",
+      "UpstreamPathTemplate": "/Receptionist/{everything}",
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Delete" ],
-      "DownstreamPathTemplate": "/Profile/{everything}",
+      "AuthenticationOptions": {
+        "AuthenticationProviderKey": "Bearer",
+        "AllowedScopes": []
+      },
+      "RouteClaimsRequirement": { "Role": "Receptionist" },
+      "DownstreamPathTemplate": "/Receptionist/{everything}",
       "DownstreamScheme": "http",
       "DownstreamHostAndPorts": [
         {
@@ -102,6 +103,7 @@
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "http://localhost:5000"
+    "BaseUrl": "http://localhost:5000",
+    "RequestIdKey": "OcRequestId"
   }
 }

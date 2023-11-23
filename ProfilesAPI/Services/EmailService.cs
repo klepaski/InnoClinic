@@ -1,7 +1,7 @@
 ﻿using System.Net.Mail;
 using System.Net;
 using ProfilesAPI.Context;
-using JuliaChistyakovaPackage;
+using SharedModels;
 
 namespace ProfilesAPI.Services
 {

@@ -5,7 +5,6 @@ using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// For Entity Framework
 ConfigurationManager configuration = builder.Configuration;
 builder.Services.AddDbContext<OfficesDbContext>(options => options.UseSqlServer(configuration.GetConnectionString("DefaultConnection")));
 
@@ -17,6 +16,13 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddTransient<IOfficeService, OfficeService>();
 
 var app = builder.Build();
+
+app.UseHttpsRedirection();
+
+app.UseCors(x => x
+    .AllowAnyOrigin()
+    .AllowAnyMethod()
+    .AllowAnyHeader());
 
 if (app.Environment.IsDevelopment())
 {

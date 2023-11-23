@@ -34,13 +34,13 @@ namespace OfficesAPI.Controllers
             return Ok(offices);
         }
 
-        [HttpDelete]
+        [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _officeService.Delete(id);
             return result.Success ?
-                Ok(result.Message) :
-                BadRequest(result.Message);
+                Ok(result) :
+                BadRequest(result);
         }
 
         [HttpPost]
@@ -48,8 +48,8 @@ namespace OfficesAPI.Controllers
         {
             var result = await _officeService.Create(office);
             return result.Success ?
-                Ok(result.Message) :
-                BadRequest(result.Message);
+                Ok(result) :
+                BadRequest(result);
         }
 
         [HttpPut]
@@ -57,17 +57,17 @@ namespace OfficesAPI.Controllers
         {
             var result = await _officeService.Update(office);
             return result.Success ?
-                Ok(result.Message) :
-                BadRequest(result.Message);
+                Ok(result) :
+                BadRequest(result);
         }
 
-        [HttpPut]
+        [HttpPut("{id}/{status}")]
         public async Task<IActionResult> ChangeStatus(int id, string status)
         {
             var result = await _officeService.ChangeStatus(id, status);
             return result.Success ?
-                Ok(result.Message) :
-                BadRequest(result.Message);
+                Ok(result) :
+                BadRequest(result);
         }
     }
 }

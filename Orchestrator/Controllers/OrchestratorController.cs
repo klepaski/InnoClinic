@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Orchestrator.Services;
-using JuliaChistyakovaPackage;
+using SharedModels;
 
 namespace Orchestrator.Controllers
 {
@@ -23,7 +23,7 @@ namespace Orchestrator.Controllers
 
             var account = await _authService.CreateAccount(user, req);
             if (account == false) return BadRequest("Can not create account.");
-            return Ok("Account created.");
+            return Ok(account);
         }
     }
 }
